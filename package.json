@@ -4,7 +4,7 @@
   "description": "A file explorer that visualizes churn and complexity of code.",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.95.0"
+    "vscode": "^1.94.0"
   },
   "categories": [
     "Other"
