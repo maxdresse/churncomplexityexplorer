@@ -15,21 +15,17 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "churn-complexity-explorer",
+          "id": "churn-complexity",
           "title": "Churn/Complexity",
-          "icon": "resources/package-explorer.svg"
+          "icon": "media/fire_elephant.svg"
         }
       ]
     },
     "views": {
-      "package-explorer": [
+      "churn-complexity": [
         {
-          "id": "package-dependencies",
-          "name": "Dependencies"
-        },
-        {
-          "id": "package-outline",
-          "name": "Outline"
+          "id": "cc-explorer",
+          "name": "Churn/Complexity Explorer"
         }
       ]
     }
