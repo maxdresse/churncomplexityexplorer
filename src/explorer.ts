@@ -34,17 +34,38 @@ export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> 
 
     private getFilesAndDirectories(folderPath: string): TreeItem[] {
         const items = fs.readdirSync(folderPath);
-        return items.map(item => {
+    
+        // Map items to TreeItems
+        const treeItems = items.map(item => {
             const fullPath = path.join(folderPath, item);
             const isDirectory = fs.statSync(fullPath).isDirectory();
-
+    
             return new TreeItem(
                 item,
                 isDirectory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
                 vscode.Uri.file(fullPath)
             );
         });
+    
+        // Sort: Folders first, then files (alphabetically within each group)
+        treeItems.sort((a, b) => {
+            const aIsDir = a.collapsibleState === vscode.TreeItemCollapsibleState.Collapsed;
+            const bIsDir = b.collapsibleState === vscode.TreeItemCollapsibleState.Collapsed;
+    
+            if (aIsDir && !bIsDir) {
+                return -1; // Folders come first
+            } else if (!aIsDir && bIsDir) {
+                return 1; // Files come later
+            } else {
+                const aS =  typeof a.label === 'string' ? a.label : a.label?.label;
+                const bS =  typeof b.label === 'string' ? b.label : b.label?.label 
+                return (aS ?? '').localeCompare(bS ?? ''); // Alphabetical order within group
+            }
+        });
+    
+        return treeItems;
     }
+    
 }
 
 class TreeItem extends vscode.TreeItem {
