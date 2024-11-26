@@ -2,15 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 
-export function activate(context: vscode.ExtensionContext) {
-    // Register the custom view provider
-    const treeDataProvider = new WorkspaceTreeProvider();
-    vscode.window.registerTreeDataProvider('customFileExplorer', treeDataProvider);
-}
-
-export function deactivate() {}
-
-class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> {
+export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined | void> = new vscode.EventEmitter();
     readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
