@@ -76,8 +76,9 @@ class TreeItem extends vscode.TreeItem {
     ) {
         super(label, collapsibleState);
         this.tooltip = this.resourceUri.fsPath;
-        this.description = path.basename(this.resourceUri.fsPath);
+        this.description = ''; // unused description
         this.resourceUri = resourceUri;
+        // this.iconPath = vscode.ThemeIcon.Folder;
 
         if (collapsibleState === vscode.TreeItemCollapsibleState.None) {
             this.command = {
