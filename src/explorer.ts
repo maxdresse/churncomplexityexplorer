@@ -1,12 +1,35 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import ignore, { Ignore } from 'ignore';
 
 export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined | void> = new vscode.EventEmitter();
     readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
-    // Refresh the tree view (optional)
+    private gitIgnore: Ignore;
+    private isGitRepo = false;
+
+    constructor() {
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+        if (!workspaceFolder) {
+            return;
+        }
+        const gitFolder = path.join(workspaceFolder, '.git');
+        this.isGitRepo = fs.existsSync(gitFolder);
+
+        // Initialize gitIgnore parser
+        this.gitIgnore = ignore();
+
+        // Load .gitignore rules from the workspace (if available)
+        const gitIgnorePath = path.join(workspaceFolder, '.gitignore');
+        if (fs.existsSync(gitIgnorePath)) {
+            const gitIgnoreContent = fs.readFileSync(gitIgnorePath, 'utf-8');
+            this.gitIgnore.add(gitIgnoreContent);
+        }
+    }
+
+    // Refresh the tree view
     refresh(): void {
         this._onDidChangeTreeData.fire();
     }
@@ -18,6 +41,10 @@ export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> 
     getChildren(element?: TreeItem): Thenable<TreeItem[]> {
         if (!vscode.workspace.workspaceFolders) {
             vscode.window.showInformationMessage('No workspace open');
+            return Promise.resolve([]);
+        }
+        if (!this.isGitRepo) {
+            vscode.window.showInformationMessage('Workspace is no git repo');
             return Promise.resolve([]);
         }
 
@@ -34,38 +61,44 @@ export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> 
 
     private getFilesAndDirectories(folderPath: string): TreeItem[] {
         const items = fs.readdirSync(folderPath);
-    
+
         // Map items to TreeItems
-        const treeItems = items.map(item => {
-            const fullPath = path.join(folderPath, item);
-            const isDirectory = fs.statSync(fullPath).isDirectory();
-    
-            return new TreeItem(
-                item,
-                isDirectory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
-                vscode.Uri.file(fullPath)
-            );
-        });
-    
+        const treeItems = items
+            .map(item => {
+                const fullPath = path.join(folderPath, item);
+                const isDirectory = fs.statSync(fullPath).isDirectory();
+
+                return new TreeItem(
+                    item,
+                    isDirectory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
+                    vscode.Uri.file(fullPath)
+                );
+            })
+            .filter(item => {
+                // Exclude files/directories ignored by Git
+                const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '';
+                const relativePath = path.relative(workspaceFolder, item.resourceUri.fsPath);
+                return !this.gitIgnore.ignores(relativePath);
+            });
+
         // Sort: Folders first, then files (alphabetically within each group)
         treeItems.sort((a, b) => {
             const aIsDir = a.collapsibleState === vscode.TreeItemCollapsibleState.Collapsed;
             const bIsDir = b.collapsibleState === vscode.TreeItemCollapsibleState.Collapsed;
-    
+
             if (aIsDir && !bIsDir) {
                 return -1; // Folders come first
             } else if (!aIsDir && bIsDir) {
                 return 1; // Files come later
             } else {
-                const aS =  typeof a.label === 'string' ? a.label : a.label?.label;
-                const bS =  typeof b.label === 'string' ? b.label : b.label?.label 
+                const aS = typeof a.label === 'string' ? a.label : a.label?.label;
+                const bS = typeof b.label === 'string' ? b.label : b.label?.label;
                 return (aS ?? '').localeCompare(bS ?? ''); // Alphabetical order within group
             }
         });
-    
+
         return treeItems;
     }
-    
 }
 
 class TreeItem extends vscode.TreeItem {
