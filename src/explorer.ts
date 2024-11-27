@@ -11,15 +11,17 @@ export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> 
     private isGitRepo = false;
 
     constructor() {
+        // Initialize gitIgnore parser
+        this.gitIgnore = ignore();
+        // add .git folder itself
+        this.gitIgnore.add('.git');
+
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
         if (!workspaceFolder) {
             return;
         }
         const gitFolder = path.join(workspaceFolder, '.git');
         this.isGitRepo = fs.existsSync(gitFolder);
-
-        // Initialize gitIgnore parser
-        this.gitIgnore = ignore();
 
         // Load .gitignore rules from the workspace (if available)
         const gitIgnorePath = path.join(workspaceFolder, '.gitignore');
