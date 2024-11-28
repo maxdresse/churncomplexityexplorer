@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import ignore, { Ignore } from 'ignore';
+import * as isbinaryfile from 'isbinaryfile';
 
 export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined | void> = new vscode.EventEmitter();
@@ -77,9 +78,16 @@ export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> 
                 );
             })
             .filter(item => {
+                const absolutePath = item.resourceUri.fsPath;
+                const isDirectory = fs.statSync(absolutePath).isDirectory();
+                // Exclude binary files
+                const isBinaryFile = !isDirectory && isbinaryfile.isBinaryFileSync(absolutePath);
+                if (isBinaryFile) {
+                    return false;
+                }
                 // Exclude files/directories ignored by Git
                 const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '';
-                const relativePath = path.relative(workspaceFolder, item.resourceUri.fsPath);
+                const relativePath = path.relative(workspaceFolder, absolutePath);
                 return !this.gitIgnore.ignores(relativePath);
             });
 
