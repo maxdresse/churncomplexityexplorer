@@ -25,11 +25,13 @@
       "churn-complexity": [
         {
           "id": "cc-controls",
-          "name": "Controls"
+          "name": "Controls",
+          "type": "webview"
         },
         {
           "id": "cc-explorer",
-          "name": "Explorer"
+          "name": "Explorer",
+          "type": "tree"
         }
       ]
     }
