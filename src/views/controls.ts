@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { ComputeChurnCommand } from '../commands/compute-churn';
 
 export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
@@ -18,7 +19,7 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
 
         // Handle messages from the Webview
         webviewView.webview.onDidReceiveMessage(async message => {
-            console.log(message.command === 'runTask');
+            console.log(message.command === ComputeChurnCommand.id);
         });
     }
 
@@ -51,7 +52,8 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
                 <script>
                     const vscode = acquireVsCodeApi();
                     document.getElementById('runTaskButton').addEventListener('click', () => {
-                        vscode.postMessage({ command: 'runTask' });
+                        console.log('click');
+                        vscode.postMessage({ command: 'churncomplexityexplorer.computeChurn' });
                     });
                 </script>
             </body>
