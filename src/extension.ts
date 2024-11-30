@@ -2,18 +2,23 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { WorkspaceTreeProvider } from './explorer';
+import { ControlsWebViewProvider } from './controls';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	// Create the TreeDataProvider
-    const treeDataProvider = new WorkspaceTreeProvider();
-
     // Register the TreeDataProvider for the custom view
-    const disposable = vscode.window.registerTreeDataProvider('cc-explorer', treeDataProvider);
+    const disposableForExp = vscode.window.registerTreeDataProvider(
+        'cc-explorer', 
+        new WorkspaceTreeProvider()
+    );
+    context.subscriptions.push(disposableForExp);
 
-    // Ensure the registration is disposed of when the extension is deactivated
-    context.subscriptions.push(disposable);
+    const disposableForCont = vscode.window.registerWebviewViewProvider(
+        'cc-controls',
+        new ControlsWebViewProvider(context)
+    );
+    context.subscriptions.push(disposableForCont);
 }
 
 // This method is called when your extension is deactivated

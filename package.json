@@ -24,6 +24,10 @@
     "views": {
       "churn-complexity": [
         {
+          "id": "cc-controls",
+          "name": "Controls"
+        },
+        {
           "id": "cc-explorer",
           "name": "Explorer"
         }
