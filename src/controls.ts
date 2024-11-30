@@ -31,23 +31,23 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Controls</title>
                 <style>
+                    html, body {
+                        height: 100%;
+                        width: 100%
+                        padding: 0;
+                        margin: 0;
+                    }
                     body {
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        height: 100%;
-                        padding: 0;
-                        margin: 0;
                     }
                     button {
-                        font-size: 16px;
-                        padding: 10px 20px;
-                        cursor: pointer;
                     }
                 </style>
             </head>
             <body>
-                <button id="runTaskButton">Run Task</button>
+                <button id="runTaskButton">Compute Churn Metrics</button>
                 <script>
                     const vscode = acquireVsCodeApi();
                     document.getElementById('runTaskButton').addEventListener('click', () => {
