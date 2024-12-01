@@ -19,7 +19,9 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
 
         // Handle messages from the Webview
         webviewView.webview.onDidReceiveMessage(async message => {
-            console.log(message.command === ComputeChurnCommand.id);
+            if (message.command === "churnAndComplexity") {
+                vscode.commands.executeCommand(ComputeChurnCommand.id);
+            }
         });
     }
 
@@ -53,7 +55,7 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
                     const vscode = acquireVsCodeApi();
                     document.getElementById('runTaskButton').addEventListener('click', () => {
                         console.log('click');
-                        vscode.postMessage({ command: 'churncomplexityexplorer.computeChurn' });
+                        vscode.postMessage({ command: 'churnAndComplexity' });
                     });
                 </script>
             </body>
