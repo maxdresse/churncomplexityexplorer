@@ -25,6 +25,8 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
                 vscode.commands.executeCommand(ComputeChurnCommand.id);
             }
         });
+        // example for posting a message to webview
+        //webviewView.webview.postMessage({ asdf: 3 })
     }
 
     private getHtmlContent(): string {

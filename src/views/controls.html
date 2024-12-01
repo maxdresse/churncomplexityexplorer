@@ -46,12 +46,16 @@
     </style>
 </head>
 <body>
-    <button id="runTaskButton">Compute Churn Metrics</button>
+    <button id="computeChurnButton">Compute Churn Metrics</button>
     <script>
         const vscode = acquireVsCodeApi();
-        document.getElementById('runTaskButton').addEventListener('click', () => {
+        document.getElementById('computeChurnButton').addEventListener('click', () => {
             console.log('click');
             vscode.postMessage({ command: 'computeChurn' });
+        });
+        window.addEventListener('message', (event) => {
+            const message = event.data;
+            // analyze message content and update view accordingly
         });
     </script>
 </body>
