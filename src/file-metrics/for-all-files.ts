@@ -1,7 +1,12 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 
-export function forAllFilesPostOrder(folderPath: string | undefined, fileFct: (p: string) => void) {
+export interface ForAllFilesOpts {
+    onRegularFile: (p: string) => void;
+    onFolder: (p:  string) => void;
+}
+
+export function forAllFiles(folderPath: string | undefined, opts: ForAllFilesOpts) {
     if (!folderPath) {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
         if (!workspaceFolder) {
@@ -10,25 +15,29 @@ export function forAllFilesPostOrder(folderPath: string | undefined, fileFct: (p
         }
         folderPath = workspaceFolder;
     }
-    const { childFolders, childFiles } = getChildren(folderPath);
+    const { childFolders, childRegularFiles } = getChildren(folderPath);
+    const { onFolder, onRegularFile } = opts;
+    // process regular (=non-folder, =leaf) files
+    childRegularFiles.forEach(file => onRegularFile(file));
     // recursion
     childFolders.forEach(folder => {
-        forAllFilesPostOrder(folder, fileFct);
+        forAllFiles(folder, opts);
+        // call "onFolder" after recursion step,
+        // ensures "post-order" behavior
+        onFolder(folder);
     });
-    // then, call function for files (post order)
-    childFiles.forEach(file => fileFct(file));
 }
 
 function getChildren(path: string) {
     const childFilesAndFolders: Array<string> = fs.readdirSync(path);
-    const childFiles: Array<string> = [];
+    const childRegularFiles: Array<string> = [];
     const childFolders: Array<string> = [];
     childFilesAndFolders.forEach(child => {
         if (fs.statSync(child).isDirectory()) {
             childFolders.push(child);
         } else {
-            childFiles.push(child);
+            childRegularFiles.push(child);
         }
     });
-    return { childFolders, childFiles };
+    return { childFolders, childRegularFiles };
 }
