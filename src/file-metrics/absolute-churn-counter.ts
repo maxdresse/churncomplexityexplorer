@@ -1,4 +1,5 @@
-import { SimpleGit } from 'simple-git';
+import * as vscode from 'vscode';
+import simpleGit, { SimpleGit } from 'simple-git';
 import { execRawGitCommand } from '../git';
 import { FilerFilter } from '../file-filter';
 import { FileMetric } from './file-metric';
@@ -6,9 +7,24 @@ import { FileMetric } from './file-metric';
 // git log --all --find-renames --find-copies --name-only --format=format: --since="2 years ago" --until=HEAD LICENSE
 const since = "2 years ago";
 
+const maxGitTimeout = 30000;
+const maxGitConcurrentProcesses = 5;
 export class AbsoluteChurnCounter implements FileMetric {
     
     private fileToChurn?: Map<string, number>;
+    private git: SimpleGit;
+
+    constructor() {
+        const wsFolders = vscode.workspace.workspaceFolders;
+        if (!wsFolders) {
+            throw Error('workspace root not found');
+        }
+        this.git = simpleGit({
+            baseDir: wsFolders[0].uri.path,
+            maxConcurrentProcesses: maxGitConcurrentProcesses,
+            timeout: { block: maxGitTimeout },
+          });
+    }        
 
     getValue(path: string) {
         return this.getChurn(path);
@@ -16,8 +32,8 @@ export class AbsoluteChurnCounter implements FileMetric {
 
     // adapted from 
     // https://github.com/CarlosBonetti/vscode-uplift-code/blob/d69fe5147519ba02d492bf60bf22e76093111966/src/metrics/git/churn.ts
-    async init(git: SimpleGit) {
-        const rawLines = await execRawGitCommand(git, [
+    async init() {
+        const rawLines = await execRawGitCommand(this.git, [
             "log",
             "--all",
             "--find-renames",
