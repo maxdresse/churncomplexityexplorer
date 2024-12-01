@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import simpleGit, { SimpleGit } from 'simple-git';
 import { execRawGitCommand } from '../git';
 import { FilerFilter } from '../file-filter';
@@ -13,14 +14,15 @@ export class AbsoluteChurnCounter implements FileMetric {
     
     private fileToChurn?: Map<string, number>;
     private git: SimpleGit;
+    private wsFolders: typeof vscode.workspace.workspaceFolders;
 
     constructor() {
-        const wsFolders = vscode.workspace.workspaceFolders;
-        if (!wsFolders) {
+        this.wsFolders = vscode.workspace.workspaceFolders;
+        if (!this.wsFolders) {
             throw Error('workspace root not found');
         }
         this.git = simpleGit({
-            baseDir: wsFolders[0].uri.path,
+            baseDir: this.wsFolders[0].uri.path,
             maxConcurrentProcesses: maxGitConcurrentProcesses,
             timeout: { block: maxGitTimeout },
           });
@@ -44,7 +46,7 @@ export class AbsoluteChurnCounter implements FileMetric {
             "--until=HEAD"
           ]);
           const fileFilter = new FilerFilter();
-          this.fileToChurn = rawLines.filter(p => fileFilter.isHandledByPlugin(p))
+          this.fileToChurn = rawLines.filter(p => fileFilter.isHandledByPlugin(path.join(this.wsFolders![0].uri.fsPath, p)))
             .reduce((map, fileName) => {
             map.set(fileName, (map.get(fileName) ?? 0) + 1);
             return map;

@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
     // register the compute churn command
     context.subscriptions.push(
         vscode.commands.registerCommand(ComputeChurnCommand.id, async () => {
-            await new ComputeChurnCommand().execute();
+            await new ComputeChurnCommand(context).execute();
         })
     );
 }
