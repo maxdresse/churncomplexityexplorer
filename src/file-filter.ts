@@ -22,7 +22,7 @@ export class FilerFilter  {
         const gitFolder = path.join(workspaceFolder, '.git');
         this.isGitRepo = fs.existsSync(gitFolder);
         if (!this.isGitRepo) {
-            vscode.window.showInformationMessage('Workspace is no git repo');
+            vscode.window.showInformationMessage("Workspace is no git repo, churncomplexityexplorer won't work");
         }
         // Load .gitignore rules from the workspace (if available)
         const gitIgnorePath = path.join(workspaceFolder, '.gitignore');
