@@ -19,7 +19,7 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
 
         // Handle messages from the Webview
         webviewView.webview.onDidReceiveMessage(async message => {
-            if (message.command === "churnAndComplexity") {
+            if (message.command === "computeChurn") {
                 vscode.commands.executeCommand(ComputeChurnCommand.id);
             }
         });
@@ -44,9 +44,34 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
                         display: flex;
                         align-items: center;
                         justify-content: center;
+                        font-family: var(--vscode-font-family);
+                        color: var(--vscode-foreground);
+                        background-color: var(--vscode-editor-background);
                     }
                     button {
+                        font-family: var(--vscode-font-family);
+                        color: var(--vscode-button-foreground);
+                        background: var(--vscode-button-background);
+                        border: 1px solid transparent;
+                        border-radius: 4px;
+                        padding: 8px 16px;
+                        cursor: pointer;
+                        transition: background-color 0.2s ease-in-out;
                     }
+
+                    button:hover {
+                        background: var(--vscode-button-hoverBackground);
+                    }
+
+                    button:focus {
+                        outline: 2px solid var(--vscode-focusBorder);
+                    }
+
+                    button:active {
+                        background: var(--vscode-button-hoverBackground);
+                        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+                    }
+
                 </style>
             </head>
             <body>
@@ -55,7 +80,7 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
                     const vscode = acquireVsCodeApi();
                     document.getElementById('runTaskButton').addEventListener('click', () => {
                         console.log('click');
-                        vscode.postMessage({ command: 'churnAndComplexity' });
+                        vscode.postMessage({ command: 'computeChurn' });
                     });
                 </script>
             </body>
