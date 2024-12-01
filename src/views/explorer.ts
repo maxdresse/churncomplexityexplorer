@@ -1,35 +1,16 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import ignore, { Ignore } from 'ignore';
-import * as isbinaryfile from 'isbinaryfile';
+import { FilerFilter } from '../file-filter';
 
 export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined | void> = new vscode.EventEmitter();
     readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
-    private gitIgnore: Ignore;
-    private isGitRepo = false;
+    private fileFilter = new FilerFilter();
 
     constructor() {
-        // Initialize gitIgnore parser
-        this.gitIgnore = ignore();
-        // add .git folder itself
-        this.gitIgnore.add('.git');
-
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-        if (!workspaceFolder) {
-            return;
-        }
-        const gitFolder = path.join(workspaceFolder, '.git');
-        this.isGitRepo = fs.existsSync(gitFolder);
-
-        // Load .gitignore rules from the workspace (if available)
-        const gitIgnorePath = path.join(workspaceFolder, '.gitignore');
-        if (fs.existsSync(gitIgnorePath)) {
-            const gitIgnoreContent = fs.readFileSync(gitIgnorePath, 'utf-8');
-            this.gitIgnore.add(gitIgnoreContent);
-        }
+        //
     }
 
     // Refresh the tree view
@@ -44,10 +25,6 @@ export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> 
     getChildren(element?: TreeItem): Thenable<TreeItem[]> {
         if (!vscode.workspace.workspaceFolders) {
             vscode.window.showInformationMessage('No workspace open');
-            return Promise.resolve([]);
-        }
-        if (!this.isGitRepo) {
-            vscode.window.showInformationMessage('Workspace is no git repo');
             return Promise.resolve([]);
         }
 
@@ -79,16 +56,7 @@ export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> 
             })
             .filter(item => {
                 const absolutePath = item.resourceUri.fsPath;
-                const isDirectory = fs.statSync(absolutePath).isDirectory();
-                // Exclude binary files
-                const isBinaryFile = !isDirectory && isbinaryfile.isBinaryFileSync(absolutePath);
-                if (isBinaryFile) {
-                    return false;
-                }
-                // Exclude files/directories ignored by Git
-                const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '';
-                const relativePath = path.relative(workspaceFolder, absolutePath);
-                return !this.gitIgnore.ignores(relativePath);
+                return this.fileFilter.isHandledByPlugin(absolutePath);
             });
 
         // Sort: Folders first, then files (alphabetically within each group)
