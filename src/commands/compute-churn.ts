@@ -29,15 +29,23 @@ export class ComputeChurnCommand {
 			}
 			const workspaceFolder = wsFolders[0].uri.fsPath
 			const ff = new FilerFilter();
-			const resultObject: Record<string, number> = {};
+			const resultObject = new Map<string, number>();
 			forAllFiles(workspaceFolder, {
 				fileFilter: p => ff.isHandledByPlugin(p),
-				onFolder: p => {
-					//
+				onFolder: (p, regularChildren) => {
+					const folderRelative = path.relative(workspaceFolder, p);
+					const childrenRelative = regularChildren.map(c => path.relative(workspaceFolder, c));
+					if (!childrenRelative.length) {
+						resultObject.set(folderRelative, 0);
+						return;
+					}
+					const maximumAmongChildren = childrenRelative.reduce((prev, current) => {
+						return counter.getValue(current) > counter.getValue(prev) ? current : prev;
+					}, childrenRelative[0]);
+					resultObject.set(folderRelative, counter.getValue(maximumAmongChildren));
 				},
 				onRegularFile: p => {
-					// just smoke test
-					resultObject[p] = counter.getValue(path.relative(workspaceFolder, p)) ?? 0;
+					resultObject.set(p, counter.getValue(path.relative(workspaceFolder, p)));
 				}
 			});
 			// use context to save to storage uri

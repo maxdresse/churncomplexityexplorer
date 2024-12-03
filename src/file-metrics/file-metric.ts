@@ -1,5 +1,5 @@
 export interface FileMetric {
 
-    getValue(path: string): number | undefined;
+    getValue(path: string): number;
 
 }

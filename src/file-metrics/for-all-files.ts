@@ -6,29 +6,30 @@ import * as path from 'path';
 export interface ForAllFilesOpts {
     fileFilter: (p: string) => boolean;
     onRegularFile: (p: string) => void;
-    onFolder: (p:  string) => void;
+    onFolder: (p:  string, regularChildren: Array<string>) => void;
 }
 
-export function forAllFiles(folderPath: string | undefined, opts: ForAllFilesOpts) {
-    if (!folderPath) {
+export function forAllFiles(folderPathAbs: string | undefined, opts: ForAllFilesOpts): Array<string> {
+    if (!folderPathAbs) {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
         if (!workspaceFolder) {
             console.error("empty path and empty workspace path, abort");
-            return;
+            return [];
         }
-        folderPath = workspaceFolder;
+        folderPathAbs = workspaceFolder;
     }
     const { onFolder, onRegularFile, fileFilter } = opts;
-    const { childFolders, childRegularFiles } = getChildren(folderPath, fileFilter);
+    const { childFolders, childRegularFiles } = getChildren(folderPathAbs, fileFilter);
     // process regular (=non-folder, =leaf) files
     childRegularFiles.forEach(file => onRegularFile(file));
     // recursion
     childFolders.forEach(folder => {
-        forAllFiles(folder, opts);
+        const regularChildrenOfFolder = forAllFiles(folder, opts);
         // call "onFolder" after recursion step,
         // ensures "post-order" behavior
-        onFolder(folder);
+        onFolder(folder, regularChildrenOfFolder);
     });
+    return childRegularFiles;
 }
 
 function getChildren(dirPath: string, fileFilter: (p: string) => boolean) {
