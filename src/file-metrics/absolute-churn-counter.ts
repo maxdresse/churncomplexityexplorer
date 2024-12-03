@@ -29,8 +29,8 @@ export class AbsoluteChurnCounter implements FileMetric {
           });
     }        
 
-    getValue(path: string) {
-        return this.getChurn(path);
+    getValue(relativePath: string) {
+        return this.getChurn(relativePath);
     }
 
     // adapted from 

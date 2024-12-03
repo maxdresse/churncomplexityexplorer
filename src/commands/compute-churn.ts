@@ -30,14 +30,14 @@ export class ComputeChurnCommand {
 			const workspaceFolder = wsFolders[0].uri.fsPath
 			const ff = new FilerFilter();
 			const resultObject: Record<string, number> = {};
-			forAllFiles(workspaceFolder, { 
+			forAllFiles(workspaceFolder, {
 				fileFilter: p => ff.isHandledByPlugin(p),
 				onFolder: p => {
 					//
 				},
 				onRegularFile: p => {
 					// just smoke test
-					resultObject[p] = counter.getValue(p) ?? 0;
+					resultObject[p] = counter.getValue(path.relative(workspaceFolder, p)) ?? 0;
 				}
 			});
 			// use context to save to storage uri
