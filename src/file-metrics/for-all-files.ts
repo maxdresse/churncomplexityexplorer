@@ -6,33 +6,39 @@ import * as path from 'path';
 export interface ForAllFilesOpts {
     fileFilter: (p: string) => boolean;
     onRegularFile: (p: string) => void;
-    onFolder: (p:  string, regularChildren: Array<string>) => void;
+    onFolder: (p:  string, folderChildren: FolderChildren) => void;
 }
 
-export function forAllFiles(folderPathAbs: string | undefined, opts: ForAllFilesOpts): Array<string> {
+export function forAllFiles(folderPathAbs: string | undefined, opts: ForAllFilesOpts): FolderChildren {
     if (!folderPathAbs) {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
         if (!workspaceFolder) {
             console.error("empty path and empty workspace path, abort");
-            return [];
+            return { childFolders: [], childRegularFiles: [] };
         }
         folderPathAbs = workspaceFolder;
     }
     const { onFolder, onRegularFile, fileFilter } = opts;
-    const { childFolders, childRegularFiles } = getChildren(folderPathAbs, fileFilter);
+    const folderChildren = getChildren(folderPathAbs, fileFilter);
+    const { childFolders, childRegularFiles } = folderChildren;
     // process regular (=non-folder, =leaf) files
     childRegularFiles.forEach(file => onRegularFile(file));
     // recursion
     childFolders.forEach(folder => {
-        const regularChildrenOfFolder = forAllFiles(folder, opts);
+        const fCh = forAllFiles(folder, opts);
         // call "onFolder" after recursion step,
         // ensures "post-order" behavior
-        onFolder(folder, regularChildrenOfFolder);
+        onFolder(folder, fCh);
     });
-    return childRegularFiles;
+    return folderChildren;
 }
 
-function getChildren(dirPath: string, fileFilter: (p: string) => boolean) {
+export type FolderChildren = {
+    childFolders: Array<string>;
+    childRegularFiles: Array<string>;
+};
+
+function getChildren(dirPath: string, fileFilter: (p: string) => boolean): FolderChildren {
     const childFilesAndFolders: Array<string> = fs.readdirSync(dirPath);
     const childRegularFiles: Array<string> = [];
     const childFolders: Array<string> = [];

@@ -32,9 +32,10 @@ export class ComputeChurnCommand {
 			const resultObject = new Map<string, number>();
 			forAllFiles(workspaceFolder, {
 				fileFilter: p => ff.isHandledByPlugin(p),
-				onFolder: (p, regularChildren) => {
+				onFolder: (p, folderChildren) => {
+					const { childRegularFiles: cr, childFolders: cf } = folderChildren;
 					const folderRelative = path.relative(workspaceFolder, p);
-					const childrenRelative = regularChildren.map(c => path.relative(workspaceFolder, c));
+					const childrenRelative = [...cr, ...cf].map(c => path.relative(workspaceFolder, c));
 					if (!childrenRelative.length) {
 						resultObject.set(folderRelative, 0);
 						return;
