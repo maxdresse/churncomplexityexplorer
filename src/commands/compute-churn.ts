@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import { AbsoluteChurnCounter } from '../file-metrics/absolute-churn-counter';
 import { forAllFiles } from '../file-metrics/for-all-files';
 import { FilerFilter } from '../file-filter';
@@ -13,7 +14,7 @@ export class ComputeChurnCommand {
     async execute() {
         await vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
-			title: "Computing project churn!",
+			title: "Computing project churn. ",
 			cancellable: true
 		}, async (progress, token) => {
 			token.onCancellationRequested(() => {
@@ -22,7 +23,7 @@ export class ComputeChurnCommand {
 			progress.report({ increment: 0, message: "Retrieving git logs" });
 			const counter = new AbsoluteChurnCounter();
 			await counter.init();
-			progress.report({ increment: 50, message: "Saving results" });
+			progress.report({ increment: 50, message: "Processing results" });
 			const wsFolders = vscode.workspace.workspaceFolders;
 			if (!wsFolders) {
 				throw Error("Unexpected empty workspace");
@@ -49,7 +50,19 @@ export class ComputeChurnCommand {
 					resultObject.set(p, counter.getValue(path.relative(workspaceFolder, p)));
 				}
 			});
+			progress.report({ increment: 80, message: "Saving results" });
 			// use context to save to storage uri
+			const storageUri = this.context.storageUri;
+			if (storageUri === undefined) {
+				vscode.window.showErrorMessage("unexpected empty storage uri, abort");
+				return
+			}
+			const storageUriPath = storageUri.path;
+			if (!fs.existsSync(storageUriPath)) {
+				fs.mkdirSync(storageUriPath);
+			}
+			const targetFile = path.resolve(storageUriPath, "testdata.json");
+			fs.writeFileSync(targetFile, JSON.stringify(Array.from(resultObject)), { encoding: "utf-8"} );
 			
 			});
 			return;
