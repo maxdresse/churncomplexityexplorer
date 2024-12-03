@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import simpleGit, { SimpleGit } from 'simple-git';
 import { execRawGitCommand } from '../git';
 import { FilerFilter } from '../file-filter';
@@ -46,7 +47,16 @@ export class AbsoluteChurnCounter implements FileMetric {
             "--until=HEAD"
           ]);
           const fileFilter = new FilerFilter();
-          this.fileToChurn = rawLines.filter(p => fileFilter.isHandledByPlugin(path.join(this.wsFolders![0].uri.fsPath, p)))
+          this.fileToChurn = rawLines.filter(p => {
+              // assemble path
+              const basePath = this.wsFolders![0].uri.fsPath;
+              const absPath = path.resolve(basePath, p);
+              // filter out non-existent paths
+              if (!fs.existsSync(absPath)) {
+                return false;
+              }
+            return fileFilter.isHandledByPlugin(absPath);
+            })
             .reduce((map, fileName) => {
             map.set(fileName, (map.get(fileName) ?? 0) + 1);
             return map;
