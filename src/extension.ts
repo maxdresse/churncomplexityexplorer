@@ -8,7 +8,8 @@ import { ComputeChurnCommand } from './commands/compute-churn';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-    const treeProvider = new WorkspaceTreeProvider();
+
+    const treeProvider = new WorkspaceTreeProvider(() => []);
     // Register the TreeDataProvider for the custom view
     const disposableForExp = vscode.window.registerTreeDataProvider(
         'cc-explorer', 
