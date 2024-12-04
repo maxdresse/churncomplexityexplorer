@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { AbsoluteChurnCounter } from '../file-metrics/absolute-churn-counter';
 import { FileMetric } from '../file-metrics/file-metric';
+import { StorageAccess } from '../persistence/storage-access';
 
 export class ComputeChurnCommand {
 
@@ -25,18 +26,8 @@ export class ComputeChurnCommand {
 			progress.report({ increment: 50, message: "Processing results" });
 			const metric = FileMetric.extendRegularFileMetricByMax(counter);
 			progress.report({ increment: 80, message: "Saving results" });
-			// use context to save to storage uri
-			const storageUri = this.context.storageUri;
-			if (storageUri === undefined) {
-				vscode.window.showErrorMessage("unexpected empty storage uri, abort");
-				return
-			}
-			const storageUriPath = storageUri.path;
-			if (!fs.existsSync(storageUriPath)) {
-				fs.mkdirSync(storageUriPath);
-			}
-			const targetFile = path.resolve(storageUriPath, "testdata.json");
-			fs.writeFileSync(targetFile, metric.serialize(), { encoding: "utf-8"} );
+			const storageAccess = new StorageAccess(this.context);
+			storageAccess.save("testdata.json", metric.serialize());
 			});
     }
 
