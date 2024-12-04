@@ -8,10 +8,11 @@ import { ComputeChurnCommand } from './commands/compute-churn';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+    const treeProvider = new WorkspaceTreeProvider();
     // Register the TreeDataProvider for the custom view
     const disposableForExp = vscode.window.registerTreeDataProvider(
         'cc-explorer', 
-        new WorkspaceTreeProvider()
+        treeProvider
     );
     context.subscriptions.push(disposableForExp);
     // register the controls webview
@@ -23,7 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
     // register the compute churn command
     context.subscriptions.push(
         vscode.commands.registerCommand(ComputeChurnCommand.id, async () => {
-            await new ComputeChurnCommand(context).execute();
+            await new ComputeChurnCommand(context, () => treeProvider.refresh()).execute();
         })
     );
 }

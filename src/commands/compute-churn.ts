@@ -14,7 +14,8 @@ export class ComputeChurnCommand {
 
     static id = 'churncomplexityexplorer.computeChurn';
 
-	constructor(private context: vscode.ExtensionContext) {}
+	constructor(private context: vscode.ExtensionContext,
+		        private onComplete: () => void) {}
 
     async execute() {
         await vscode.window.withProgress({
@@ -33,6 +34,7 @@ export class ComputeChurnCommand {
 			progress.report({ increment: 80, message: msgSaving });
 			const storageAccess = new StorageAccess(this.context);
 			storageAccess.save(churnPersistenceFilename, metric.serialize());
+			this.onComplete();
 			});
     }
 
