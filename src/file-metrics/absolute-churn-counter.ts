@@ -4,14 +4,14 @@ import * as fs from 'fs';
 import simpleGit, { SimpleGit } from 'simple-git';
 import { execRawGitCommand } from '../git';
 import { FilerFilter } from '../file-filter';
-import { FileMetric } from './file-metric';
+import { RegularFileMetric } from './regular-file-metric';
 
 // git log --all --find-renames --find-copies --name-only --format=format: --since="2 years ago" --until=HEAD LICENSE
 const since = "2 years ago";
 
 const maxGitTimeout = 30000;
 const maxGitConcurrentProcesses = 5;
-export class AbsoluteChurnCounter implements FileMetric {
+export class AbsoluteChurnCounter implements RegularFileMetric {
     
     private fileToChurn?: Map<string, number>;
     private git: SimpleGit;
