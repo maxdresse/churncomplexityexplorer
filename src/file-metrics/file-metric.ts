@@ -35,7 +35,8 @@ export class FileMetric {
 				resultObject.set(folderRelative, rfm.getValue(maximumAmongChildren));
 			},
 			onRegularFile: p => {
-				resultObject.set(p, rfm.getValue(path.relative(workspaceFolder, p)));
+				const relP = path.relative(workspaceFolder, p);
+				resultObject.set(relP, rfm.getValue(relP));
 			}
 		});
 		return new FileMetric(resultObject);
