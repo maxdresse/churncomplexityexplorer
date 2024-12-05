@@ -56,12 +56,25 @@ export class FileMetric {
     constructor (private filePathToValue: Map<string, number>) {}
 
     getValue(path: string) {
-        return this.filePathToValue.get(path);
+        return this.filePathToValue.get(path) ?? 0;
     }
 
     serialize(): string {
         return JSON.stringify(Array.from(this.filePathToValue));
     }
+
+	getQuintiles(): [number, number, number, number, number] {
+		const numbers = [...this.filePathToValue.values()];
+		if (numbers.length === 0) {
+			const inf = Number.POSITIVE_INFINITY;
+			return [inf, inf, inf, inf, inf];
+		}
+		const sorted = [...numbers].sort((a, b) => a - b);
+		// Compute the indices for the desired percentiles
+		const percentiles = [20, 40, 60, 80, 100];
+		const indices = percentiles.map(p => Math.floor((p / 100) * (sorted.length - 1)));
+		return indices.map(i => sorted[i]) as [number, number, number, number, number];
+	}
 
 	saveToPersistence(basename: string, context: vscode.ExtensionContext) {
 		const sa = new StorageAccess(context);

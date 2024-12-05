@@ -2,14 +2,14 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { FilerFilter } from '../file-filter';
-import { LabelDecoratorFactory } from './label-decorator';
+import { LabelDecorator, LabelDecoratorFactory } from './label-decorator';
 
 export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined | void> = new vscode.EventEmitter();
     readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
     private fileFilter = new FilerFilter();
-    private labelDecorators: Array<(label: string, absoluteFilePath: string) => string> = [];
+    private labelDecorators: Array<LabelDecorator> = [];
 
     constructor(private labelDecoratorFactory: LabelDecoratorFactory) {
         this.updateLabelDecorators();
