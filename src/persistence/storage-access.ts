@@ -25,17 +25,7 @@ export class StorageAccess {
         }
     }
 
-    private ensureStorageDirExists() {
-        if (!fs.existsSync(this.storageUriPath)) {
-            fs.mkdirSync(this.storageUriPath);
-        }
-    }
-
-    private getFilename(basename: string) {
-        return path.resolve(this.storageUriPath, basename);
-    }
-
-    load(basename: string): Array<object> {
+    load(basename: string): object {
         let result = [];
         try {
             const payload = fs.readFileSync(this.getFilename(basename), { encoding: 'utf-8' });
@@ -44,6 +34,16 @@ export class StorageAccess {
             vscode.window.showErrorMessage('Could not load from storage');
         }
         return result;
+    }
+
+    private ensureStorageDirExists() {
+        if (!fs.existsSync(this.storageUriPath)) {
+            fs.mkdirSync(this.storageUriPath);
+        }
+    }
+
+    private getFilename(basename: string) {
+        return path.resolve(this.storageUriPath, basename);
     }
 
 }

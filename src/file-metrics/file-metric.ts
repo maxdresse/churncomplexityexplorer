@@ -3,6 +3,8 @@ import { RegularFileMetric } from './regular-file-metric';
 import { FilerFilter } from '../file-filter';
 import { forAllFiles } from './for-all-files';
 import * as path from 'path';
+import { getWorkspaceFolder } from '../get-ws-folder';
+import { StorageAccess } from '../persistence/storage-access';
 
 export class FileMetric {
 
@@ -14,34 +16,42 @@ export class FileMetric {
      * @returns 
      */
     static extendRegularFileMetricByMax(rfm: RegularFileMetric): FileMetric {
-        const wsFolders = vscode.workspace.workspaceFolders;
-			if (!wsFolders) {
-				throw Error("Unexpected empty workspace");
-			}
-			const workspaceFolder = wsFolders[0].uri.fsPath
-			const ff = new FilerFilter();
-			const resultObject = new Map<string, number>();
-			forAllFiles(workspaceFolder, {
-				fileFilter: p => ff.isHandledByPlugin(p),
-				onFolder: (p, folderChildren) => {
-					const { childRegularFiles: cr, childFolders: cf } = folderChildren;
-					const folderRelative = path.relative(workspaceFolder, p);
-					const childrenRelative = [...cr, ...cf].map(c => path.relative(workspaceFolder, c));
-					if (!childrenRelative.length) {
-						resultObject.set(folderRelative, 0);
-						return;
-					}
-					const maximumAmongChildren = childrenRelative.reduce((prev, current) => {
-						return rfm.getValue(current) > rfm.getValue(prev) ? current : prev;
-					}, childrenRelative[0]);
-					resultObject.set(folderRelative, rfm.getValue(maximumAmongChildren));
-				},
-				onRegularFile: p => {
-					resultObject.set(p, rfm.getValue(path.relative(workspaceFolder, p)));
+        const workspaceFolder = getWorkspaceFolder();
+		const ff = new FilerFilter();
+		const resultObject = new Map<string, number>();
+		forAllFiles(workspaceFolder, {
+			fileFilter: p => ff.isHandledByPlugin(p),
+			onFolder: (p, folderChildren) => {
+				const { childRegularFiles: cr, childFolders: cf } = folderChildren;
+				const folderRelative = path.relative(workspaceFolder, p);
+				const childrenRelative = [...cr, ...cf].map(c => path.relative(workspaceFolder, c));
+				if (!childrenRelative.length) {
+					resultObject.set(folderRelative, 0);
+					return;
 				}
-			});
-            return new FileMetric(resultObject);
+				const maximumAmongChildren = childrenRelative.reduce((prev, current) => {
+					return rfm.getValue(current) > rfm.getValue(prev) ? current : prev;
+				}, childrenRelative[0]);
+				resultObject.set(folderRelative, rfm.getValue(maximumAmongChildren));
+			},
+			onRegularFile: p => {
+				resultObject.set(p, rfm.getValue(path.relative(workspaceFolder, p)));
+			}
+		});
+		return new FileMetric(resultObject);
     }
+
+	static fromPersistence(basename: string, context: vscode.ExtensionContext): FileMetric | undefined {
+		const sa = new StorageAccess(context);
+		let fileToValue: Map<string, number> | undefined;
+		try {
+			const obj = sa.load(basename);
+			fileToValue = obj instanceof Map ? obj as Map<string, number> : undefined;
+		} catch(e) {
+			console.error(e);
+		}
+		return fileToValue ? new FileMetric(fileToValue) : undefined;
+	}
 
     constructor (private filePathToValue: Map<string, number>) {}
 
@@ -52,5 +62,10 @@ export class FileMetric {
     serialize(): string {
         return JSON.stringify(Array.from(this.filePathToValue));
     }
+
+	saveToPersistence(basename: string, context: vscode.ExtensionContext) {
+		const sa = new StorageAccess(context);
+		sa.save(basename, this.serialize());
+	}
 
 }

@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { AbsoluteChurnCounter } from '../file-metrics/absolute-churn-counter';
 import { FileMetric } from '../file-metrics/file-metric';
-import { StorageAccess } from '../persistence/storage-access';
 
 const progressTitle = "Computing project churn. ";
 const msgRetrieveGitLogs = "Retrieving git logs";
@@ -32,8 +31,8 @@ export class ComputeChurnCommand {
 			progress.report({ increment: 50, message: msgProcessing });
 			const metric = FileMetric.extendRegularFileMetricByMax(counter);
 			progress.report({ increment: 80, message: msgSaving });
-			const storageAccess = new StorageAccess(this.context);
-			storageAccess.save(churnPersistenceFilename, metric.serialize());
+			
+			metric.saveToPersistence(churnPersistenceFilename, this.context);
 			this.onComplete();
 			});
     }
