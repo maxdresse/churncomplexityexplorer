@@ -9,7 +9,7 @@ export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> 
     readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
     private fileFilter = new FilerFilter();
-    private labelDecorators: Array<(label: string) => string> = [];
+    private labelDecorators: Array<(label: string, absoluteFilePath: string) => string> = [];
 
     constructor(private labelDecoratorFactory: LabelDecoratorFactory) {
         this.updateLabelDecorators();
@@ -55,7 +55,7 @@ export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> 
                 const fullPath = path.join(folderPath, name);
                 const isDirectory = fs.statSync(fullPath).isDirectory();
                 // apply decorators
-                this.labelDecorators.forEach(d => name = d(name));
+                this.labelDecorators.forEach(d => name = d(name, fullPath));
                 return new TreeItem(
                     name,
                     isDirectory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
