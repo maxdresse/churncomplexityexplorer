@@ -47,16 +47,17 @@ export class WorkspaceTreeProvider implements vscode.TreeDataProvider<TreeItem> 
     }
 
     private getFilesAndDirectories(folderPath: string): TreeItem[] {
-        const items = fs.readdirSync(folderPath);
+        const baseNames = fs.readdirSync(folderPath);
 
         // Map items to TreeItems
-        const treeItems = items
-            .map(item => {
-                const fullPath = path.join(folderPath, item);
+        const treeItems = baseNames
+            .map(name => {
+                const fullPath = path.join(folderPath, name);
                 const isDirectory = fs.statSync(fullPath).isDirectory();
-
+                // apply decorators
+                this.labelDecorators.forEach(d => name = d(name));
                 return new TreeItem(
-                    item,
+                    name,
                     isDirectory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
                     vscode.Uri.file(fullPath)
                 );
