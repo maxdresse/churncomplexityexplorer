@@ -26,10 +26,11 @@ export class StorageAccess {
     }
 
     load(basename: string): object {
-        let result = [];
+        let result = new Map<string, number>();
         try {
             const payload = fs.readFileSync(this.getFilename(basename), { encoding: 'utf-8' });
-            result = JSON.parse(payload);
+            const entriesArray = JSON.parse(payload);
+            result = new Map<string, number>(entriesArray);
         } catch(e) {
             vscode.window.showErrorMessage('Could not load from storage');
         }
