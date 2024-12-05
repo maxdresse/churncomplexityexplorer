@@ -3,13 +3,15 @@
 import * as vscode from 'vscode';
 import { WorkspaceTreeProvider } from './views/explorer';
 import { ControlsWebViewProvider } from './views/controls';
-import { ComputeChurnCommand } from './commands/compute-churn';
+import { churnPersistenceFilename, ComputeChurnCommand } from './commands/compute-churn';
+import { getLabelDecoratorFactory } from './load-label-decorator';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-    const treeProvider = new WorkspaceTreeProvider(() => []);
+    const factory = getLabelDecoratorFactory(churnPersistenceFilename, context);
+    const treeProvider = new WorkspaceTreeProvider(factory);
     // Register the TreeDataProvider for the custom view
     const disposableForExp = vscode.window.registerTreeDataProvider(
         'cc-explorer', 
