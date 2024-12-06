@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { commandIdChurn } from '../commands/compute-churn';
+import { commandIdLoc } from '../commands/compute-loc';
 
 export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
@@ -23,6 +24,8 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
         webviewView.webview.onDidReceiveMessage(async message => {
             if (message.command === "computeChurn") {
                 vscode.commands.executeCommand(commandIdChurn);
+            } else if (message.command === "computeLoc") {
+                vscode.commands.executeCommand(commandIdLoc);
             }
         });
         // example for posting a message to webview

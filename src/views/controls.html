@@ -14,7 +14,7 @@
         body {
             display: flex;
             align-items: center;
-            justify-content: center;
+            flex-direction: column;
             font-family: var(--vscode-font-family);
             color: var(--vscode-foreground);
             background-color: var(--vscode-editor-background);
@@ -28,6 +28,7 @@
             padding: 8px 16px;
             cursor: pointer;
             transition: background-color 0.2s ease-in-out;
+            margin-top: 10px;
         }
 
         button:hover {
@@ -47,11 +48,14 @@
 </head>
 <body>
     <button id="computeChurnButton">Compute Churn Metrics</button>
+    <button id="computeLocButton">Compute Lines of Code</button>
     <script>
         const vscode = acquireVsCodeApi();
         document.getElementById('computeChurnButton').addEventListener('click', () => {
-            console.log('click');
             vscode.postMessage({ command: 'computeChurn' });
+        });
+        document.getElementById('computeLocButton').addEventListener('click', () => {
+            vscode.postMessage({ command: 'computeLoc' });
         });
         window.addEventListener('message', (event) => {
             const message = event.data;

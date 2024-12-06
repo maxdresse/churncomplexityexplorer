@@ -21,8 +21,17 @@ export class LocCounter implements RegularFileMetric {
         const absPath = path.resolve(this.wsFolder, relativePath);
         const code = fs.readFileSync(absPath, { encoding: 'utf-8' });
         
-        const loc = sloc(code, getFileExtension(relativePath));
-        return loc?.source ?? 0
+        const extension = getFileExtension(relativePath);
+        if (!extension) {
+            // sloc library always needs an extension
+            return 0;
+        }
+        try {
+            const loc = sloc(code, extension);
+            return loc?.source ?? 0
+        } catch (e) {
+            return 0;
+        }
     }
     
 }
