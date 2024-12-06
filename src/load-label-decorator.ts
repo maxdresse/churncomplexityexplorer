@@ -8,7 +8,7 @@ export function getLabelDecoratorFactory(metricPersistenceFilename: string, deco
     return () => {
         const metric = FileMetric.fromPersistence(metricPersistenceFilename, context);
         if (!metric) {
-            console.error('failed to load metric from persistence');
+            // metric not yet computed or file is corrupt
             return [(l, _afp) => l] as Array<LabelDecorator>;
         }
         const quintiles = metric.getExponentialQuintiles();

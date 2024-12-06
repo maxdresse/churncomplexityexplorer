@@ -46,8 +46,16 @@ export class FileMetric {
 	static fromPersistence(basename: string, context: vscode.ExtensionContext): FileMetric | undefined {
 		const sa = new StorageAccess(context);
 		let fileToValue: Map<string, number> | undefined;
+		if (!sa.exists(basename)) {
+			return undefined;
+		}
 		try {
 			const obj = sa.load(basename);
+			if (!obj) {
+				// we know file must exist, but we could not load it
+				// => delete it in order to avoid corrupt files
+				sa.delete(basename);
+			}
 			fileToValue = obj instanceof Map ? obj as Map<string, number> : undefined;
 		} catch(e) {
 			console.error(e);
