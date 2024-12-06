@@ -3,14 +3,14 @@
 import * as vscode from 'vscode';
 import { WorkspaceTreeProvider } from './views/explorer';
 import { ControlsWebViewProvider } from './views/controls';
-import { churnPersistenceFilename, commandIdChurn, getComputeChurnComand } from './commands/compute-churn';
-import { getLabelDecoratorFactory } from './load-label-decorator';
+import { getAllDecoratingMetrics } from './decorating-metric';
+import { combineDecoratorFactories } from './views/label-decorator';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
-    const factory = getLabelDecoratorFactory(churnPersistenceFilename, '🔥', context);
+    const decoratingMetrics =  getAllDecoratingMetrics(context);
+    const factory = combineDecoratorFactories(decoratingMetrics.map(dm => dm.labelDecoratorFactory));
     const treeProvider = new WorkspaceTreeProvider(factory);
     // Register the TreeDataProvider for the custom view
     const disposableForExp = vscode.window.registerTreeDataProvider(
@@ -24,12 +24,14 @@ export function activate(context: vscode.ExtensionContext) {
         new ControlsWebViewProvider(context)
     );
     context.subscriptions.push(disposableForCont);
-    // register the compute churn command
-    context.subscriptions.push(
-        vscode.commands.registerCommand(commandIdChurn, async () => {
-            await getComputeChurnComand(context, () => treeProvider.refresh()).execute();
-        })
-    );
+    // register the commands
+    decoratingMetrics.forEach(({ commandId, commandFactory }) => {
+        context.subscriptions.push(
+            vscode.commands.registerCommand(commandId, async () => {
+                await commandFactory(() => treeProvider.refresh()).execute();
+            })
+        );
+    });
 }
 
 // This method is called when your extension is deactivated

@@ -16,6 +16,10 @@
       {
         "command": "churncomplexityexplorer.computeChurn",
         "title": "Compute Churn"
+      },
+      {
+        "command": "churncomplexityexplorer.computeLoc",
+        "title": "Compute Lines of Code"
       }
     ],
     "viewsContainers": {
