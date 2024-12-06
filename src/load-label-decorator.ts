@@ -4,7 +4,7 @@ import { LabelDecorator, LabelDecoratorFactory } from './views/label-decorator';
 import { FileMetric } from './file-metrics/file-metric';
 import { getWorkspaceFolder } from './get-ws-folder';
 
-export function getLabelDecoratorFactory(metricPersistenceFilename: string, context: vscode.ExtensionContext): LabelDecoratorFactory {
+export function getLabelDecoratorFactory(metricPersistenceFilename: string, decoratingChar: string, context: vscode.ExtensionContext): LabelDecoratorFactory {
     return () => {
         const metric = FileMetric.fromPersistence(metricPersistenceFilename, context);
         if (!metric) {
@@ -22,7 +22,7 @@ export function getLabelDecoratorFactory(metricPersistenceFilename: string, cont
                     largestIdx = idx;
                 }
             }
-            return '🔥'.repeat(largestIdx) + label;
+            return decoratingChar.repeat(largestIdx) + label;
         }] as Array<LabelDecorator>;
     };
 }

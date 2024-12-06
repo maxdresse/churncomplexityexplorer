@@ -10,7 +10,7 @@ import { getLabelDecoratorFactory } from './load-label-decorator';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-    const factory = getLabelDecoratorFactory(churnPersistenceFilename, context);
+    const factory = getLabelDecoratorFactory(churnPersistenceFilename, '🔥', context);
     const treeProvider = new WorkspaceTreeProvider(factory);
     // Register the TreeDataProvider for the custom view
     const disposableForExp = vscode.window.registerTreeDataProvider(

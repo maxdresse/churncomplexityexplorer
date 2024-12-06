@@ -59,6 +59,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.9",
     "@types/node": "20.x",
+    "@types/sloc": "^0.2.3",
     "@types/vscode": "^1.95.0",
     "@typescript-eslint/eslint-plugin": "^8.10.0",
     "@typescript-eslint/parser": "^8.7.0",
@@ -72,8 +73,9 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "simple-git": "^3.27.0",
     "ignore": "^6.0.2",
-    "isbinaryfile": "^5.0.4"
+    "isbinaryfile": "^5.0.4",
+    "simple-git": "^3.27.0",
+    "sloc": "^0.3.2"
   }
 }
