@@ -29,10 +29,11 @@ export class FileMetric {
 					resultObject.set(folderRelative, 0);
 					return;
 				}
+				const getVal = (s: string) => resultObject.get(s) ?? 0;
 				const maximumAmongChildren = childrenRelative.reduce((prev, current) => {
-					return rfm.getValue(current) > rfm.getValue(prev) ? current : prev;
+					return getVal(current) > getVal(prev) ? current : prev;
 				}, childrenRelative[0]);
-				resultObject.set(folderRelative, rfm.getValue(maximumAmongChildren));
+				resultObject.set(folderRelative, getVal(maximumAmongChildren));
 			},
 			onRegularFile: p => {
 				const relP = path.relative(workspaceFolder, p);
