@@ -20,6 +20,10 @@
       {
         "command": "churncomplexityexplorer.computeLoc",
         "title": "Compute Lines of Code"
+      },
+      {
+        "command": "churncomplexityexplorer.clearAllMetrics",
+        "title": "Clear all Churn and Complexity Metrics Data"
       }
     ],
     "viewsContainers": {
