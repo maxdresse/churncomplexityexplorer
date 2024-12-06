@@ -11,7 +11,7 @@ export function getLabelDecoratorFactory(metricPersistenceFilename: string, cont
             console.error('failed to load metric from persistence');
             return [(l, _afp) => l] as Array<LabelDecorator>;
         }
-        const quintiles = metric.getQuintiles();
+        const quintiles = metric.getExponentialQuintiles();
         const wsFolder = getWorkspaceFolder();
         return [(label, absoluteFilePath) => {
             const relativeFilePath = path.relative(wsFolder, absoluteFilePath);

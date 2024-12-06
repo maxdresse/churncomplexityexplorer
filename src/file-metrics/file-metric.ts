@@ -64,7 +64,7 @@ export class FileMetric {
         return JSON.stringify(Array.from(this.filePathToValue));
     }
 
-	getQuintiles(): [number, number, number, number, number] {
+	getExponentialQuintiles(): [number, number, number, number, number] {
 		const numbers = [...this.filePathToValue.values()];
 		if (numbers.length === 0) {
 			const inf = Number.POSITIVE_INFINITY;
@@ -72,7 +72,9 @@ export class FileMetric {
 		}
 		const sorted = [...numbers].sort((a, b) => a - b);
 		// Compute the indices for the desired percentiles
-		const percentiles = [20, 40, 60, 80, 100];
+		// percentiles grow closer exponentially as they increase
+		// => basically a logarithmic scale
+		const percentiles = [50, 75, 87.5, 93.75, 96.875];
 		const indices = percentiles.map(p => Math.floor((p / 100) * (sorted.length - 1)));
 		return indices.map(i => sorted[i]) as [number, number, number, number, number];
 	}
