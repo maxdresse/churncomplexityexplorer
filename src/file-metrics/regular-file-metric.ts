@@ -3,6 +3,7 @@
  */
 export interface RegularFileMetric {
 
+    init?(): Promise<void>;
     getValue(path: string): number;
 
 }

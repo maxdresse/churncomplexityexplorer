@@ -3,7 +3,7 @@
 import * as vscode from 'vscode';
 import { WorkspaceTreeProvider } from './views/explorer';
 import { ControlsWebViewProvider } from './views/controls';
-import { churnPersistenceFilename, ComputeChurnCommand } from './commands/compute-churn';
+import { churnPersistenceFilename, commandIdChurn, getComputeChurnComand } from './commands/compute-churn';
 import { getLabelDecoratorFactory } from './load-label-decorator';
 
 // This method is called when your extension is activated
@@ -26,8 +26,8 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposableForCont);
     // register the compute churn command
     context.subscriptions.push(
-        vscode.commands.registerCommand(ComputeChurnCommand.id, async () => {
-            await new ComputeChurnCommand(context, () => treeProvider.refresh()).execute();
+        vscode.commands.registerCommand(commandIdChurn, async () => {
+            await getComputeChurnComand(context, () => treeProvider.refresh()).execute();
         })
     );
 }
