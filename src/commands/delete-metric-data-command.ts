@@ -10,7 +10,7 @@ export class DeleteMetricDataCommand {
     async execute() {
         await vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
-			title: "Deleting all metrics data",
+			title: "Deleting metrics data",
 			cancellable: false
 		}, async (progress) => {
 			progress.report({ increment: 0, message: 'begin deletion' });
