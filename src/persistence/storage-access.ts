@@ -43,7 +43,9 @@ export class StorageAccess {
     }
 
     delete(basename: string): void {
-        fs.unlinkSync(this.getFilename(basename));
+        if (this.exists(basename)) {
+            fs.unlinkSync(this.getFilename(basename));
+        }
     }
 
     private ensureStorageDirExists() {
