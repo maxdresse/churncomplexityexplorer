@@ -22,8 +22,12 @@
         "title": "Compute Lines of Code"
       },
       {
-        "command": "churncomplexityexplorer.clearAllMetrics",
-        "title": "Clear all Churn and Complexity Metrics Data"
+        "command": "churncomplexityexplorer.clearChurn",
+        "title": "Clear Churn Data"
+      },
+      {
+        "command": "churncomplexityexplorer.clearLoc",
+        "title": "Clear Lines of Code Data"
       }
     ],
     "viewsContainers": {

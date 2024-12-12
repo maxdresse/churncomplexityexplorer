@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
 import { StorageAccess } from '../persistence/storage-access';
 
-export class DeleteAllMetricsDataCommand {
+export class DeleteMetricDataCommand {
 
-	constructor(private context: vscode.ExtensionContext,
+	constructor(private persistenceFileBasename: string,
+				private context: vscode.ExtensionContext,
 		        private onComplete: () => void) {}
 
-    async execute(persistenceFileBasenames: Array<string>) {
+    async execute() {
         await vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
 			title: "Deleting all metrics data",
@@ -14,10 +15,9 @@ export class DeleteAllMetricsDataCommand {
 		}, async (progress) => {
 			progress.report({ increment: 0, message: 'begin deletion' });
             const sa = new StorageAccess(this.context);
-            persistenceFileBasenames.forEach(bn => sa.delete(bn));
+            sa.delete(this.persistenceFileBasename);
 			progress.report({ increment: 100, message: "done" });			
 			this.onComplete();
 			});
     }
-
 }

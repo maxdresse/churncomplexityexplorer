@@ -1,13 +1,11 @@
 import * as vscode from 'vscode';
-import { churnPersistenceFilename, commandIdChurn, getComputeChurnComand } from './commands/compute-churn';
-import { ComputeMetricCommand } from './commands/compute-metric-command';
+import { churnPersistenceFilename, commandIdChurn, commandIdClearChurn, getClearChurnCommand, getComputeChurnComand } from './commands/compute-churn';
 import { LabelDecoratorFactory } from './views/label-decorator';
 import { getLabelDecoratorFactory } from './load-label-decorator';
-import { commandIdLoc, getComputeLocComand, locPersistenceFilename } from './commands/compute-loc';
+import { commandIdClearLoc, commandIdLoc, getClearLocCommand, getComputeLocComand, locPersistenceFilename } from './commands/compute-loc';
 
 export interface DecoratingMetric {
-    commandId: string;
-    commandFactory: (onComplete:() => void) => ComputeMetricCommand;
+    commandIdToFactory: Record<string, (onComplete:() => void) => { execute(): Promise<void> }>;
     labelDecoratorFactory: LabelDecoratorFactory;
 }
 
@@ -15,15 +13,19 @@ export function getAllDecoratingMetrics(context: vscode.ExtensionContext): Array
     return [
         // churn
         {
-            commandId: commandIdChurn,
-            commandFactory: (onComplete) => getComputeChurnComand(context, onComplete),
+            commandIdToFactory: {
+                [commandIdChurn]: (onComplete) =>  getComputeChurnComand(context, onComplete),
+                [commandIdClearChurn]: (onComplete) => getClearChurnCommand(context, onComplete)
+            },
             labelDecoratorFactory: getLabelDecoratorFactory(churnPersistenceFilename, '🔥', context)
         },
         // loc (=complexity)
         {
-            commandId: commandIdLoc,
-            commandFactory: (onComplete) => getComputeLocComand(context, onComplete),
-            labelDecoratorFactory: getLabelDecoratorFactory(locPersistenceFilename, '🐘', context)   
+            commandIdToFactory: {
+                [commandIdLoc]: (onComplete) =>  getComputeLocComand(context, onComplete),
+                [commandIdClearLoc]: (onComplete) => getClearLocCommand(context, onComplete)
+            },
+            labelDecoratorFactory: getLabelDecoratorFactory(locPersistenceFilename, '🐘', context)
         }
     ];
 }

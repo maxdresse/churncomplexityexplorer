@@ -24,13 +24,15 @@ export function activate(context: vscode.ExtensionContext) {
         new ControlsWebViewProvider(context)
     );
     context.subscriptions.push(disposableForCont);
-    // register the commands
-    decoratingMetrics.forEach(({ commandId, commandFactory }) => {
-        context.subscriptions.push(
-            vscode.commands.registerCommand(commandId, async () => {
-                await commandFactory(() => treeProvider.refresh()).execute();
-            })
-        );
+    // register the commands for the metrics
+    decoratingMetrics.forEach(({commandIdToFactory}) => {
+        Object.entries(commandIdToFactory).forEach(([commandId, factory]) => {
+            context.subscriptions.push(
+                vscode.commands.registerCommand(commandId, async () => {
+                    await factory(() => treeProvider.refresh()).execute();
+                })
+            );
+        });
     });
 }
 
