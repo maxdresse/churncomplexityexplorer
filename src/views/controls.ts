@@ -3,11 +3,15 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { commandIdChurn, commandIdClearChurn } from '../commands/compute-churn';
 import { commandIdClearLoc, commandIdLoc } from '../commands/compute-loc';
+import { ObservableLike } from '../observable-like';
+import { ComputationState } from '../computation-state';
 
 export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
 
-    constructor(private readonly context: vscode.ExtensionContext) {}
+    constructor(private readonly context: vscode.ExtensionContext,
+                private readonly computationState$: ObservableLike<ComputationState>
+    ) {}
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
         this._view = webviewView;

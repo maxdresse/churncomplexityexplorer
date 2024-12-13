@@ -5,6 +5,7 @@ import { getLabelDecoratorFactory } from './load-label-decorator';
 import { commandIdClearLoc, commandIdLoc, getClearLocCommand, getComputeLocComand, locPersistenceFilename } from './commands/compute-loc';
 
 export interface DecoratingMetric {
+    id: string;
     commandIdToFactory: Record<string, (onComplete:() => void) => { execute(): Promise<void> }>;
     labelDecoratorFactory: LabelDecoratorFactory;
 }
@@ -13,6 +14,7 @@ export function getAllDecoratingMetrics(context: vscode.ExtensionContext): Array
     return [
         // churn
         {
+            id: "churn",
             commandIdToFactory: {
                 [commandIdChurn]: (onComplete) =>  getComputeChurnComand(context, onComplete),
                 [commandIdClearChurn]: (onComplete) => getClearChurnCommand(context, onComplete)
@@ -21,6 +23,7 @@ export function getAllDecoratingMetrics(context: vscode.ExtensionContext): Array
         },
         // loc (=complexity)
         {
+            id: "loc",
             commandIdToFactory: {
                 [commandIdLoc]: (onComplete) =>  getComputeLocComand(context, onComplete),
                 [commandIdClearLoc]: (onComplete) => getClearLocCommand(context, onComplete)
