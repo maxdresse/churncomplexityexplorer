@@ -5,7 +5,7 @@ import { WorkspaceTreeProvider } from './views/explorer';
 import { ControlsWebViewProvider } from './views/controls';
 import { getAllDecoratingMetrics } from './decorating-metric';
 import { combineDecoratorFactories } from './views/label-decorator';
-import { AppComputationState } from './computation-state';
+import { AppState } from './app-state';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
         treeProvider
     );
     context.subscriptions.push(disposableForExp);
-    const appCompState = new AppComputationState();
+    const appCompState = new AppState();
     // register the controls webview
     const disposableForCont = vscode.window.registerWebviewViewProvider(
         'cc-controls',
@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(disposableForCont);
     // register the commands for the metrics
-    decoratingMetrics.forEach(({commandIdToFactory }) => {
+    decoratingMetrics.forEach(({ commandIdToFactory }) => {
         Object.entries(commandIdToFactory).forEach(([commandId, factory]) => {
             context.subscriptions.push(
                 vscode.commands.registerCommand(commandId, async () => {

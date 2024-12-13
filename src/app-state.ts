@@ -8,13 +8,13 @@ export interface MetricState {
     isDataPresent: boolean;
 }
 
-export interface ComputationState {
+export interface ReableAppState {
      readonly metricIdToState: Record<string, MetricState>;
 }
 
-export class AppComputationState {
-    private cbs: Array<(v: ComputationState) => void> = [];
-    private current: ComputationState = {
+export class AppState {
+    private cbs: Array<(v: ReableAppState) => void> = [];
+    private current: ReableAppState = {
         metricIdToState: {}
     };
 
@@ -25,7 +25,7 @@ export class AppComputationState {
         this.notifyAll();
     }
 
-    subscribe(cb: (v: ComputationState) => void): { unsubscribe: () => void } {
+    subscribe(cb: (v: ReableAppState) => void): { unsubscribe: () => void } {
         this.cbs.push(cb);
         return {
             unsubscribe: () => {
@@ -37,8 +37,8 @@ export class AppComputationState {
         };
     }
 
-    private cloneState(): ComputationState {
-        const s: ComputationState = { 
+    private cloneState(): ReableAppState {
+        const s: ReableAppState = { 
             metricIdToState: Object.fromEntries(Object.entries(this.current)
              .map(([mid, ms]) => [mid, {...ms}]))
         };
