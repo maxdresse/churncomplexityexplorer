@@ -3,32 +3,37 @@ import { churnPersistenceFilename, commandIdChurn, commandIdClearChurn, getClear
 import { LabelDecoratorFactory } from './views/label-decorator';
 import { getLabelDecoratorFactory } from './load-label-decorator';
 import { commandIdClearLoc, commandIdLoc, getClearLocCommand, getComputeLocComand, locPersistenceFilename } from './commands/compute-loc';
+import { StorageAccess } from './persistence/storage-access';
 
 export interface DecoratingMetric {
     id: string;
-    commandIdToFactory: Record<string, (onComplete:() => void) => { execute(): Promise<void> }>;
+    isDataPresent: () => boolean;
+    computationCommandIdToFactory: Record<string, (onComplete:() => void) => { execute(): Promise<void> }>;
     labelDecoratorFactory: LabelDecoratorFactory;
 }
 
 export function getAllDecoratingMetrics(context: vscode.ExtensionContext): Array<DecoratingMetric> {
+    const sa = new StorageAccess(context);
     return [
         // churn
         {
             id: "churn",
-            commandIdToFactory: {
+            computationCommandIdToFactory: {
                 [commandIdChurn]: (onComplete) =>  getComputeChurnComand(context, onComplete),
                 [commandIdClearChurn]: (onComplete) => getClearChurnCommand(context, onComplete)
             },
-            labelDecoratorFactory: getLabelDecoratorFactory(churnPersistenceFilename, '🔥', context)
+            labelDecoratorFactory: getLabelDecoratorFactory(churnPersistenceFilename, '🔥', context),
+            isDataPresent: () => sa.exists(churnPersistenceFilename)
         },
         // loc (=complexity)
         {
             id: "loc",
-            commandIdToFactory: {
+            computationCommandIdToFactory: {
                 [commandIdLoc]: (onComplete) =>  getComputeLocComand(context, onComplete),
                 [commandIdClearLoc]: (onComplete) => getClearLocCommand(context, onComplete)
             },
-            labelDecoratorFactory: getLabelDecoratorFactory(locPersistenceFilename, '🐘', context)
+            labelDecoratorFactory: getLabelDecoratorFactory(locPersistenceFilename, '🐘', context),
+            isDataPresent: () => sa.exists(locPersistenceFilename)
         }
     ];
 }

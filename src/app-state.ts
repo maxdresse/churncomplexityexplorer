@@ -1,4 +1,4 @@
-export enum MetricComputationState {
+export const enum MetricComputationState {
     IDLE,
     RUNNING,
 }
@@ -8,13 +8,13 @@ export interface MetricState {
     isDataPresent: boolean;
 }
 
-export interface ReableAppState {
-     readonly metricIdToState: Record<string, MetricState>;
+export interface ReadableAppState {
+     readonly metricIdToState: Record<string, MetricState | undefined>;
 }
 
 export class AppState {
-    private cbs: Array<(v: ReableAppState) => void> = [];
-    private current: ReableAppState = {
+    private cbs: Array<(v: ReadableAppState) => void> = [];
+    private current: ReadableAppState = {
         metricIdToState: {}
     };
 
@@ -25,8 +25,9 @@ export class AppState {
         this.notifyAll();
     }
 
-    subscribe(cb: (v: ReableAppState) => void): { unsubscribe: () => void } {
+    subscribe(cb: (v: ReadableAppState) => void): { unsubscribe: () => void } {
         this.cbs.push(cb);
+        cb(this.current);
         return {
             unsubscribe: () => {
                 const idx = this.cbs.indexOf(cb);
@@ -37,8 +38,12 @@ export class AppState {
         };
     }
 
-    private cloneState(): ReableAppState {
-        const s: ReableAppState = { 
+    getMetricState(id: string): MetricState | undefined {
+        return this.current.metricIdToState[id];
+    }
+
+    private cloneState(): ReadableAppState {
+        const s: ReadableAppState = { 
             metricIdToState: Object.fromEntries(Object.entries(this.current)
              .map(([mid, ms]) => [mid, {...ms}]))
         };
