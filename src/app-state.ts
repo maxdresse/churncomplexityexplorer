@@ -12,6 +12,7 @@ export interface ReadableAppState {
      readonly metricIdToState: Record<string, MetricState | undefined>;
 }
 
+// needs to stay JSON-able in order to pass it to web views
 export class AppState {
     private cbs: Array<(v: ReadableAppState) => void> = [];
     private current: ReadableAppState = {

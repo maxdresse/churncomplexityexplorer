@@ -7,15 +7,12 @@ import { ObservableLike } from '../observable-like';
 import { ReadableAppState } from '../app-state';
 
 export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
-    private _view?: vscode.WebviewView;
 
     constructor(private readonly context: vscode.ExtensionContext,
                 private readonly computationState$: ObservableLike<ReadableAppState>
     ) {}
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
-        this._view = webviewView;
-
         // Set up the Webview
         webviewView.webview.options = {
             enableScripts: true
@@ -38,8 +35,10 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
                 handler();
             }
         });
-        // example for posting a message to webview
-        //webviewView.webview.postMessage({ asdf: 3 })
+
+        this.computationState$.subscribe(s => {
+            webviewView?.webview?.postMessage?.(s);
+        })
     }
 
     private getHtmlContent(): string {
