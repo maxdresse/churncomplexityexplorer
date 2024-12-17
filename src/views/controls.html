@@ -48,19 +48,9 @@
 </head>
 <body>
     <div class="btn-row">
-        <button id="computeAllButton">🔥🐘</button>
+        <button id="computeAllButton">Collect Stats 🔥🐘</button>
+        <button id="clearAllButton">Clear Stats 🗑️</button>
     </div>
-    <div class="btn-row">
-        <button id="computeChurnButton">Compute Churn Metrics</button>
-        <button id="clearChurnButton" title="Clear Metric">X</button>
-    </div>
-    <div class="btn-row">
-        <button id="computeLocButton">Compute Lines of Code</button>
-        <button id="clearLocButton" title="Clear Metric">X</button>
-    </div>
-    <pre id="json">
-
-    </pre>
     <script>
         const vscode = acquireVsCodeApi();
         const registerButton = (buttonId, uiCommandId) => {
@@ -68,15 +58,12 @@
             vscode.postMessage({ command: uiCommandId });
         });
         };
-        registerButton('computeChurnButton', 'computeChurn');
-        registerButton('clearChurnButton', 'clearChurn');
-        registerButton('computeLocButton', 'computeLoc');
-        registerButton('clearLocButton', 'clearLoc');
         registerButton('computeAllButton', 'computeAll');
+        registerButton('clearAllButton', 'clearAll');
         
         window.addEventListener('message', (event) => {
             const message = event.data;
-            document.getElementById('json').innerText = JSON.stringify(message);
+            
         });
     </script>
 </body>

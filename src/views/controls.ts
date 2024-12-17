@@ -29,6 +29,10 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
             computeAll: async () => {
                 await vscode.commands.executeCommand(commandIdChurn);
                 await vscode.commands.executeCommand(commandIdLoc);
+            },
+            clearAll: async () => {
+                await vscode.commands.executeCommand(commandIdClearChurn);
+                await vscode.commands.executeCommand(commandIdClearLoc);
             }
         };
 
