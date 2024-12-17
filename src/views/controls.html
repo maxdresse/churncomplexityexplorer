@@ -55,6 +55,9 @@
         <button id="computeLocButton">Compute Lines of Code</button>
         <button id="clearLocButton" title="Clear Metric">X</button>
     </div>
+    <pre id="json">
+
+    </pre>
     <script>
         const vscode = acquireVsCodeApi();
         const registerButton = (buttonId, uiCommandId) => {
@@ -69,7 +72,7 @@
         
         window.addEventListener('message', (event) => {
             const message = event.data;
-            // analyze message content and update view accordingly
+            document.getElementById('json').innerText = JSON.stringify(message);
         });
     </script>
 </body>

@@ -45,8 +45,8 @@ export class AppState {
 
     private cloneState(): ReadableAppState {
         const s: ReadableAppState = { 
-            metricIdToState: Object.fromEntries(Object.entries(this.current)
-             .map(([mid, ms]) => [mid, {...ms}]))
+            metricIdToState: Object.fromEntries(Object.entries(this.current.metricIdToState)
+             .map(([mid, ms]) => [mid, ms ? {...ms}: undefined]))
         };
         return s;
     }

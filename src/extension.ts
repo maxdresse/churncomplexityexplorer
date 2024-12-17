@@ -29,12 +29,15 @@ export function activate(context: vscode.ExtensionContext) {
     // register the commands for the metrics
     decoratingMetrics.forEach(({ computationCommandIdToFactory: commandIdToFactory, id, isDataPresent }) => {
         Object.entries(commandIdToFactory).forEach(([commandId, factory]) => {
+            const updateState = (computation: MetricComputationState) => {
+                const ms: MetricState = { isDataPresent: isDataPresent(),  computation };
+                appCompState.updateMetricState(id, ms);
+            };
+            // first state init
+            updateState(MetricComputationState.IDLE);
             context.subscriptions.push(
                 vscode.commands.registerCommand(commandId, async () => {
-                    const updateState = (computation: MetricComputationState) => {
-                        const ms: MetricState = { isDataPresent: isDataPresent(),  computation };
-                        appCompState.updateMetricState(id, ms);
-                    };
+                    
                     // update state before ...
                     updateState(MetricComputationState.RUNNING);
                     await factory(() => treeProvider.refresh()).execute();
