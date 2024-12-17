@@ -3,41 +3,42 @@
 import * as vscode from 'vscode';
 import { WorkspaceTreeProvider } from './views/explorer';
 import { ControlsWebViewProvider } from './views/controls';
-import { getAllDecoratingMetrics } from './decorating-metric';
+import { DecoratingMetric, getAllDecoratingMetrics } from './decorating-metric';
 import { combineDecoratorFactories } from './views/label-decorator';
 import { AppState, MetricComputationState, MetricState } from './app-state';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-    const decoratingMetrics =  getAllDecoratingMetrics(context);
+function registerExplorerView(decoratingMetrics: Array<DecoratingMetric>, context: vscode.ExtensionContext) {
     const factory = combineDecoratorFactories(decoratingMetrics.map(dm => dm.labelDecoratorFactory));
     const treeProvider = new WorkspaceTreeProvider(factory);
     // Register the TreeDataProvider for the custom view
     const disposableForExp = vscode.window.registerTreeDataProvider(
-        'cc-explorer', 
+        'cc-explorer',
         treeProvider
     );
     context.subscriptions.push(disposableForExp);
-    const appCompState = new AppState();
-    // register the controls webview
+    return treeProvider;
+}
+
+function registerControlsView(context: vscode.ExtensionContext, appCompState: AppState) {
     const disposableForCont = vscode.window.registerWebviewViewProvider(
         'cc-controls',
         new ControlsWebViewProvider(context, appCompState)
     );
     context.subscriptions.push(disposableForCont);
-    // register the commands for the metrics
+}
+
+function registerMetricCommands(decoratingMetrics: Array<DecoratingMetric>, appCompState: AppState, context: vscode.ExtensionContext, treeProvider: WorkspaceTreeProvider) {
     decoratingMetrics.forEach(({ computationCommandIdToFactory: commandIdToFactory, id, isDataPresent }) => {
         Object.entries(commandIdToFactory).forEach(([commandId, factory]) => {
             const updateState = (computation: MetricComputationState) => {
-                const ms: MetricState = { isDataPresent: isDataPresent(),  computation };
+                const ms: MetricState = { isDataPresent: isDataPresent(), computation };
                 appCompState.updateMetricState(id, ms);
             };
             // first state init
             updateState(MetricComputationState.IDLE);
             context.subscriptions.push(
                 vscode.commands.registerCommand(commandId, async () => {
-                    
+
                     // update state before ...
                     updateState(MetricComputationState.RUNNING);
                     await factory(() => treeProvider.refresh()).execute();
@@ -47,6 +48,19 @@ export function activate(context: vscode.ExtensionContext) {
             );
         });
     });
+}
+
+// This method is called when your extension is activated
+// Your extension is activated the very first time the command is executed
+export function activate(context: vscode.ExtensionContext) {
+    const decoratingMetrics =  getAllDecoratingMetrics(context);
+    // register tree view
+    const treeProvider = registerExplorerView(decoratingMetrics, context);
+    const appCompState = new AppState();
+    // register the controls webview
+    registerControlsView(context, appCompState);
+    // register the commands for the metrics
+    registerMetricCommands(decoratingMetrics, appCompState, context, treeProvider);
 }
 
 // This method is called when your extension is deactivated
