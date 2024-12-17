@@ -48,6 +48,9 @@
 </head>
 <body>
     <div class="btn-row">
+        <button id="computeAllButton">🔥🐘</button>
+    </div>
+    <div class="btn-row">
         <button id="computeChurnButton">Compute Churn Metrics</button>
         <button id="clearChurnButton" title="Clear Metric">X</button>
     </div>
@@ -69,6 +72,7 @@
         registerButton('clearChurnButton', 'clearChurn');
         registerButton('computeLocButton', 'computeLoc');
         registerButton('clearLocButton', 'clearLoc');
+        registerButton('computeAllButton', 'computeAll');
         
         window.addEventListener('message', (event) => {
             const message = event.data;

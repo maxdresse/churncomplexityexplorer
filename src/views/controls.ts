@@ -21,18 +21,22 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
         // HTML content for the Webview
         webviewView.webview.html = this.getHtmlContent();
 
-        const webviewMsgHandlers: Record<string, () => void> = {
+        const webviewMsgHandlers: Record<string, () => void | Thenable<void>> = {
             computeChurn: () => vscode.commands.executeCommand(commandIdChurn),
             clearChurn: () => vscode.commands.executeCommand(commandIdClearChurn),
             computeLoc: () => vscode.commands.executeCommand(commandIdLoc),
             clearLoc: () => vscode.commands.executeCommand(commandIdClearLoc),
+            computeAll: async () => {
+                await vscode.commands.executeCommand(commandIdChurn);
+                await vscode.commands.executeCommand(commandIdLoc);
+            }
         };
 
         // Handle messages from the Webview
         webviewView.webview.onDidReceiveMessage(async message => {
             const handler = webviewMsgHandlers[message.command];
             if (typeof handler === 'function') {
-                handler();
+                await handler();
             }
         });
 
