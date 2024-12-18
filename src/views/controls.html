@@ -53,17 +53,43 @@
     </div>
     <script>
         const vscode = acquireVsCodeApi();
-        const registerButton = (buttonId, uiCommandId) => {
-            document.getElementById(buttonId).addEventListener('click', () => {
+        const registerButton = (buttonElement, uiCommandId) => {
+            buttonElement.addEventListener('click', () => {
             vscode.postMessage({ command: uiCommandId });
         });
         };
-        registerButton('computeAllButton', 'computeAll');
-        registerButton('clearAllButton', 'clearAll');
+        const computeBtn = document.getElementById('computeAllButton');
+        const clearBtn = document.getElementById('clearAllButton');
+        registerButton(computeBtn, 'computeAll');
+        registerButton(clearBtn, 'clearAll');
         
         window.addEventListener('message', (event) => {
-            const message = event.data;
-            
+            /*
+            structure of event.data is as follows:
+            interface AppState {
+                metricIdToState: Record<string, MetricState | undefined>;
+            }
+
+            interface MetricState {
+                computation: MetricComputationState;
+                isDataPresent: boolean;
+            }
+
+            export const enum MetricComputationState {
+                IDLE,
+                RUNNING,
+            }
+            */
+            const state = event.data;
+            console.log(state, Object.values(state.metricIdToState));
+            const isAnyComputationActive = Object.values(state.metricIdToState)
+                .some(metricState => metricState?.computation === 1);
+            const isAnyDataPresent = Object.values(state.metricIdToState)
+                .some(metricState => metricState?.isDataPresent);
+            // buttons are non-interactable when any computation is active
+            [computeBtn, clearBtn].forEach(btn => btn.disabled = isAnyComputationActive);
+            // clear button is hidden when no data is present
+            clearBtn.style.visibility = isAnyDataPresent ? 'visible' : 'hidden';
         });
     </script>
 </body>
