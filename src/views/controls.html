@@ -50,19 +50,32 @@
 
         button:disabled {
             color: var(--vscode-disabledForeground);
-            background: var(--vscode-button-disabledBackground, #d4d4d4); /* Fallback color in case the theme lacks the variable */
-            border: 1px solid var(--vscode-button-disabledBorder, #ccc); /* Fallback color */
+            background: var(--vscode-button-disabledBackground, #d4d4d4); /* Initial background */
+            border: 1px solid var(--vscode-button-disabledBorder, #ccc);
             cursor: not-allowed;
             box-shadow: none;
-            opacity: 0.6; /* Reduces visibility to signify it's disabled */
+            opacity: 0.6;
+            animation: disabled-pulse 2s infinite ease-in-out; /* Periodic animation */
+        }
+
+        @keyframes disabled-pulse {
+            0% {
+                background: var(--vscode-button-disabledBackground, #d4d4d4);
+            }
+            50% {
+                background: var(--vscode-button-hoverBackground, #e0e0e0); /* Slightly lighter */
+            }
+            100% {
+                background: var(--vscode-button-disabledBackground, #d4d4d4);
+            }
         }
 
     </style>
 </head>
 <body>
     <div class="btn-container">
-        <button id="computeAllButton">Collect Stats 🔥🐘</button>
-        <button id="clearAllButton">Clear Stats 🗑️</button>
+        <button id="computeAllButton">Compute Metrics 🔥🐘</button>
+        <button id="clearAllButton">Clear 🗑️</button>
     </div>
     <script>
         const vscode = acquireVsCodeApi();
@@ -75,6 +88,9 @@
         const clearBtn = document.getElementById('clearAllButton');
         registerButton(computeBtn, 'computeAll');
         registerButton(clearBtn, 'clearAll');
+        // set tooltip for buttons
+        computeBtn.title = 'Collect churn and complexity data of the codebase';
+        clearBtn.title = 'Clear churn and complexity data';
         
         window.addEventListener('message', (event) => {
             /*
@@ -103,6 +119,8 @@
             [computeBtn, clearBtn].forEach(btn => btn.disabled = isAnyComputationActive);
             // clear button is hidden when no data is present
             clearBtn.style.visibility = isAnyDataPresent ? 'visible' : 'hidden';
+            // update the button text of the compute button
+            computeBtn.innerText = isAnyDataPresent ? 'Update Metrics 🔥🐘' : 'Collect Metrics 🔥🐘';
         });
     </script>
 </body>
