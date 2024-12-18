@@ -5,6 +5,7 @@ import { commandIdChurn, commandIdClearChurn } from '../commands/compute-churn';
 import { commandIdClearLoc, commandIdLoc } from '../commands/compute-loc';
 import { ObservableLike } from '../observable-like';
 import { ReadableAppState } from '../app-state';
+import { getWorkspaceFolder } from '../get-ws-folder';
 
 export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
 
@@ -45,7 +46,7 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
         });
 
         this.computationState$.subscribe(s => {
-            webviewView?.webview?.postMessage?.(s);
+            webviewView?.webview?.postMessage?.({ computationState: s, hasWorkspaceFolder: !!getWorkspaceFolder() });
         })
     }
 

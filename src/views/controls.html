@@ -55,6 +55,9 @@
             cursor: not-allowed;
             box-shadow: none;
             opacity: 0.6;
+        }
+
+        button.comp-animation {
             animation: disabled-pulse 2s infinite ease-in-out; /* Periodic animation */
         }
 
@@ -94,7 +97,7 @@
         
         window.addEventListener('message', (event) => {
             /*
-            structure of event.data is as follows:
+            structure of event.data.computationState is as follows:
             interface AppState {
                 metricIdToState: Record<string, MetricState | undefined>;
             }
@@ -109,14 +112,16 @@
                 RUNNING,
             }
             */
-            const state = event.data;
+            const state = event.data.computationState;
+            const hasWorkspaceFolder = event.data.hasWorkspaceFolder;
             console.log(state, Object.values(state.metricIdToState));
             const isAnyComputationActive = Object.values(state.metricIdToState)
                 .some(metricState => metricState?.computation === 1);
             const isAnyDataPresent = Object.values(state.metricIdToState)
                 .some(metricState => metricState?.isDataPresent);
             // buttons are non-interactable when any computation is active
-            [computeBtn, clearBtn].forEach(btn => btn.disabled = isAnyComputationActive);
+            [computeBtn, clearBtn].forEach(btn => btn.disabled = !hasWorkspaceFolder || isAnyComputationActive);
+            [computeBtn, clearBtn].forEach(btn => btn.classList.toggle('comp-animation', isAnyComputationActive));
             // clear button is hidden when no data is present
             clearBtn.style.visibility = isAnyDataPresent ? 'visible' : 'hidden';
             // update the button text of the compute button
