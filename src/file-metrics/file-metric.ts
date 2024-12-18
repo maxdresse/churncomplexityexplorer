@@ -15,8 +15,11 @@ export class FileMetric {
      * @param rfm 
      * @returns 
      */
-    static extendRegularFileMetricByMax(rfm: RegularFileMetric): FileMetric {
+    static extendRegularFileMetricByMax(rfm: RegularFileMetric): FileMetric | null {
         const workspaceFolder = getWorkspaceFolder();
+		if (!workspaceFolder) {
+			return null;
+		}
 		const ff = new FilerFilter();
 		const resultObject = new Map<string, number>();
 		forAllFiles(workspaceFolder, {

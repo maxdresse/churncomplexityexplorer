@@ -14,7 +14,11 @@ export class LocCounter implements RegularFileMetric {
     wsFolder: string;
 
     constructor() {
-        this.wsFolder = getWorkspaceFolder();
+        const wsf = getWorkspaceFolder();
+        if (!wsf) {
+            throw new Error("Unexpected empty workspace");
+        }
+        this.wsFolder = wsf;
     }        
 
     getValue(relativePath: string) {

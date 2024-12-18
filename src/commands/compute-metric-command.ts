@@ -38,6 +38,10 @@ export class ComputeMetricCommand {
             }
 			progress.report({ increment: 50, message: messageIsProcessing });
 			const metric = FileMetric.extendRegularFileMetricByMax(this.regularFileMetric);
+            if (!metric) {
+                console.error("unexpected nullish mectric");
+                return;
+            }
 			progress.report({ increment: 80, message: messageIsSaving });
 			
 			metric.saveToPersistence(persistenceFileName, this.context);

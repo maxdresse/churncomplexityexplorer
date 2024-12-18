@@ -13,6 +13,9 @@ export function getLabelDecoratorFactory(metricPersistenceFilename: string, deco
         }
         const quintiles = metric.getExponentialQuintiles();
         const wsFolder = getWorkspaceFolder();
+        if (!wsFolder) {
+            return [];
+        }
         return [(label, absoluteFilePath) => {
             const relativeFilePath = path.relative(wsFolder, absoluteFilePath);
             const value = metric.getValue(relativeFilePath);

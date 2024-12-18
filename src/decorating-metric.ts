@@ -13,7 +13,6 @@ export interface DecoratingMetric {
 }
 
 export function getAllDecoratingMetrics(context: vscode.ExtensionContext): Array<DecoratingMetric> {
-    const sa = new StorageAccess(context);
     return [
         // churn
         {
@@ -23,7 +22,7 @@ export function getAllDecoratingMetrics(context: vscode.ExtensionContext): Array
                 [commandIdClearChurn]: (onComplete) => getClearChurnCommand(context, onComplete)
             },
             labelDecoratorFactory: getLabelDecoratorFactory(churnPersistenceFilename, '🔥', context),
-            isDataPresent: () => sa.exists(churnPersistenceFilename)
+            isDataPresent: () => new StorageAccess(context).exists(churnPersistenceFilename)
         },
         // loc (=complexity)
         {
@@ -33,7 +32,7 @@ export function getAllDecoratingMetrics(context: vscode.ExtensionContext): Array
                 [commandIdClearLoc]: (onComplete) => getClearLocCommand(context, onComplete)
             },
             labelDecoratorFactory: getLabelDecoratorFactory(locPersistenceFilename, '🐘', context),
-            isDataPresent: () => sa.exists(locPersistenceFilename)
+            isDataPresent: () => new StorageAccess(context).exists(locPersistenceFilename)
         }
     ];
 }

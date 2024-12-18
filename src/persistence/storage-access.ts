@@ -7,7 +7,6 @@ export class StorageAccess {
     constructor(private context: vscode.ExtensionContext) {
         const storageUri = this.context.storageUri;
         if (storageUri === undefined) {
-            vscode.window.showErrorMessage('Unexpected empty storage uri, abort');
             return;
         }
         this.storageUriPath = storageUri.path;
@@ -18,6 +17,9 @@ export class StorageAccess {
     save(basename: string, payload: string): void {
         this.ensureStorageDirExists();
         const targetFile = this.getFilename(basename);
+        if (!targetFile) {
+            return;
+        }
         try {
             fs.writeFileSync(targetFile, payload, { encoding: 'utf-8'} );
         } catch (e) {
@@ -28,7 +30,11 @@ export class StorageAccess {
     load(basename: string): object | undefined {
         let result = undefined;
         try {
-            const payload = fs.readFileSync(this.getFilename(basename), { encoding: 'utf-8' });
+            const filename = this.getFilename(basename);
+            if (!filename) {
+                return undefined;
+            }
+            const payload = fs.readFileSync(filename, { encoding: 'utf-8' });
             const entriesArray = JSON.parse(payload);
             result = new Map<string, number>(entriesArray);
         } catch(e) {
@@ -39,12 +45,17 @@ export class StorageAccess {
     }
 
     exists(basename: string): boolean {
-        return fs.existsSync(this.getFilename(basename));
+        const filename = this.getFilename(basename);
+        if (!filename) {
+            return false;
+        }
+        return fs.existsSync(filename);
     }
 
     delete(basename: string): void {
-        if (this.exists(basename)) {
-            fs.unlinkSync(this.getFilename(basename));
+        const filename = this.getFilename(basename);
+        if (filename && this.exists(basename)) {
+            fs.unlinkSync(filename);
         }
     }
 
@@ -55,6 +66,9 @@ export class StorageAccess {
     }
 
     private getFilename(basename: string) {
+        if (!this.storageUriPath) {
+            return null;
+        }
         return path.resolve(this.storageUriPath, basename);
     }
 
