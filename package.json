@@ -3,6 +3,11 @@
   "displayName": "ChurnComplexityExplorer",
   "description": "A file explorer that visualizes churn and complexity of code.",
   "icon": "media/cce_logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maxdresse/churncomplexityexplorer.git"
+  },
+  "homepage": "https://github.com/maxdresse/churncomplexityexplorer/blob/main/README.md",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.95.0"
