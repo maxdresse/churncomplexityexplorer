@@ -32,7 +32,7 @@ export class LocCounter implements RegularFileMetric {
         }
         try {
             const loc = sloc(code, extension);
-            return loc?.source ?? 0
+            return loc?.source ?? 0;
         } catch (e) {
             return 0;
         }

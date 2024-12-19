@@ -47,7 +47,7 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
 
         this.computationState$.subscribe(s => {
             webviewView?.webview?.postMessage?.({ computationState: s, hasWorkspaceFolder: !!getWorkspaceFolder() });
-        })
+        });
     }
 
     private getHtmlContent(): string {
