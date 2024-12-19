@@ -30,7 +30,11 @@ Many flames or elephants are not automatically bad, they only display which file
 
 #### Scale is logarithmic
 
-Churn count and LOC are scaled logarithmically, so that in order to double the flame/elephant count, you need to have the doubled respective metric value.
+Churn count and LOC are scaled logarithmically, so that in order to increase the flame/elephant count by one, the file needs to rank twice as high in the respective metric.
+
+#### Directories get the max-value of their children
+
+The churn/complexity of a directory is the maximum of the churn/complexity of its children.
 
 ## Known Issues
 
