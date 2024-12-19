@@ -2,6 +2,7 @@
   "name": "churncomplexityexplorer",
   "displayName": "ChurnComplexityExplorer",
   "description": "A file explorer that visualizes churn and complexity of code.",
+  "icon": "media/cce_logo.png",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.94.0"
