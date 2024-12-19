@@ -8,7 +8,7 @@
     "vscode": "^1.94.0"
   },
   "categories": [
-    "Other"
+    "Visualization"
   ],
   "activationEvents": [],
   "main": "./dist/extension.js",
