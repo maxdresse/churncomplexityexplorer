@@ -1,71 +1,38 @@
-# churncomplexityexplorer README
+# Churn/Complexity Explorer
 
-This is the README for your extension "churncomplexityexplorer". After writing up a brief description, we recommend including the following sections.
+A file explorer plugin that visualizes which parts of the codebase have the highest churn and complexity.
+
+This is probably not too interesting for codebases you already know well, but could be of use if you
+want to see where the action is going on in an unknown codebase.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+* Open a workspace and activate the extension
+* Press the "Collect Metrics" Button
 
-For example if there is an image subfolder under your extension project workspace:
+=> When the collection is done, the file explorer will visualize churn and complexity hotspots
+by adding
 
-\!\[feature X\]\(images/feature-x.png\)
+* zero to four flames 🔥🔥🔥🔥 as churn indicator
+* zero to four elephants 🐘🐘🐘🐘 as complexity indicator
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
 
-## Requirements
+Here is a demo that shows the extension in action on the repository of the Angular project:
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+![Demo](demo.gif)
 
-## Extension Settings
+Note:
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+#### 🔥/🐘-Metrics are relative
 
-For example:
+Many flames or elephants are not automatically bad, they only display which files are the 
+"hottest" and most complex relative to the others. So, for example, even if all files are very small in a codebase, there will still be files with higher LOC count *relative to the others*.
 
-This extension contributes the following settings:
+#### Scale is logarithmic
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+Churn count and LOC are scaled logarithmically, so that in order to double the flame/elephant count, you need to have the doubled respective metric value.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+This project is still in a very early stage.
 
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
