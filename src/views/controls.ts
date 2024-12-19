@@ -182,6 +182,6 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
     </script>
 </body>
 </html>
-`
+`;
     }
 }
