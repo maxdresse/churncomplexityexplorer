@@ -9,7 +9,7 @@ export class StorageAccess {
         if (storageUri === undefined) {
             return;
         }
-        this.storageUriPath = storageUri.path;
+        this.storageUriPath = storageUri.fsPath;
     }
 
     private storageUriPath = '';
