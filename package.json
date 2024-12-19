@@ -5,7 +5,7 @@
   "icon": "media/cce_logo.png",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.94.0"
+    "vscode": "^1.95.0"
   },
   "categories": [
     "Visualization"
