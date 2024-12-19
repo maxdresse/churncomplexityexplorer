@@ -23,7 +23,7 @@ export class AbsoluteChurnCounter implements RegularFileMetric {
             throw Error('workspace root not found');
         }
         this.git = simpleGit({
-            baseDir: this.wsFolders[0].uri.path,
+            baseDir: this.wsFolders[0].uri.fsPath,
             maxConcurrentProcesses: maxGitConcurrentProcesses,
             timeout: { block: maxGitTimeout },
           });
