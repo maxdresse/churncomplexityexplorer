@@ -47,10 +47,12 @@ export class AbsoluteChurnCounter implements RegularFileMetric {
             "--until=HEAD"
           ]);
           const fileFilter = new FilerFilter();
-          this.fileToChurn = rawLines.filter(p => {
+          this.fileToChurn = rawLines.map(p => {
               // assemble path
               const basePath = this.wsFolders![0].uri.fsPath;
               const absPath = path.resolve(basePath, p);
+              return absPath; })
+          .filter(absPath => {
               // filter out non-existent paths
               if (!fs.existsSync(absPath)) {
                 return false;
@@ -58,7 +60,9 @@ export class AbsoluteChurnCounter implements RegularFileMetric {
             return fileFilter.isHandledByPlugin(absPath);
             })
             .reduce((map, fileName) => {
-            map.set(fileName, (map.get(fileName) ?? 0) + 1);
+                const basePath = this.wsFolders![0].uri.fsPath;
+                const relPath = path.relative(basePath, fileName);
+                map.set(relPath, (map.get(relPath) ?? 0) + 1);
             return map;
           }, new Map<string, number>());
     }
