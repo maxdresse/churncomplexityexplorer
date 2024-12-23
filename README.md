@@ -19,7 +19,7 @@ by adding
 
 Here is a demo that shows the extension in action on the repository of the Angular project:
 
-![Demo](demo.gif)
+![Demo](https://github.com/maxdresse/churncomplexityexplorer/blob/ff35236b9913b3513b620007bfdd69c36634f4ac/demo.gif?raw=true)
 
 Note:
 
