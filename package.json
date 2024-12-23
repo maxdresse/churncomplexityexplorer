@@ -9,7 +9,7 @@
     "url": "https://github.com/maxdresse/churncomplexityexplorer.git"
   },
   "homepage": "https://github.com/maxdresse/churncomplexityexplorer/blob/main/README.md",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.95.0"
   },
