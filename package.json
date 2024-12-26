@@ -74,7 +74,12 @@
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
     "test": "vscode-test",
-    "jest": "jest"
+    "jest": "jest",
+    "build-local-package": " npx @vscode/vsce package -o local.vsix",
+    "install-local-package": "code --install-extension local.vsix",
+    "uninstall-local-package": "code --uninstall-extension maxdresse.churncomplexityexplorer || exit 0",
+    "clear-local-package": "rm -f local.vsix",
+    "quickinst": "npm run uninstall-local-package && npm run clear-local-package && npm run build-local-package && npm run install-local-package"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
