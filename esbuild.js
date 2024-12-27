@@ -32,6 +32,7 @@ async function main() {
 		format: 'cjs',
 		minify: production,
 		sourcemap: !production,
+		tsconfig: 'tsconfig.app.json',
 		sourcesContent: false,
 		platform: 'node',
 		outfile: 'dist/extension.js',
