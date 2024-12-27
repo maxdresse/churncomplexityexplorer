@@ -79,7 +79,8 @@
     "install-local-package": "code --install-extension local.vsix",
     "uninstall-local-package": "code --uninstall-extension maxdresse.churncomplexityexplorer || exit 0",
     "clear-local-package": "rm -f local.vsix",
-    "quickinst": "npm run uninstall-local-package && npm run clear-local-package && npm run build-local-package && npm run install-local-package"
+    "quickinst": "npm run uninstall-local-package && npm run clear-local-package && npm run build-local-package && npm run install-local-package",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
@@ -93,6 +94,7 @@
     "@vscode/test-electron": "^2.4.1",
     "esbuild": "^0.24.0",
     "eslint": "^9.13.0",
+    "husky": "^9.1.7",
     "ignore": "^6.0.2",
     "isbinaryfile": "^5.0.4",
     "jest": "^29.7.0",
