@@ -5,11 +5,18 @@ import { ObservableLike } from '../observable-like';
 import { ReadableAppState } from '../app-state';
 import { getWorkspaceFolder } from '../get-ws-folder';
 
+interface WebViewState {
+    computationState: ReadableAppState;
+    hasWorkspaceFolder: boolean;
+}
+
 export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
 
     constructor(private readonly context: vscode.ExtensionContext,
                 private readonly computationState$: ObservableLike<ReadableAppState>
     ) {}
+
+    private latestWebViewState: WebViewState | undefined;
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
         // Set up the Webview
@@ -43,8 +50,11 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
             }
         });
 
-        const sub = this.computationState$.subscribe(s => {
-            webviewView?.webview?.postMessage?.({ computationState: s, hasWorkspaceFolder: !!getWorkspaceFolder() });
+        const sub = this.computationState$
+            .subscribe(s => {
+                const webViewState = { computationState: s, hasWorkspaceFolder: !!getWorkspaceFolder() };
+                this.latestWebViewState = webViewState;
+                webviewView?.webview?.postMessage?.(webViewState);
         });
 
         webviewView.onDidDispose(() => {
@@ -52,7 +62,9 @@ export class ControlsWebViewProvider implements vscode.WebviewViewProvider {
         });
 
         webviewView.onDidChangeVisibility(() => {
-            //
+            if (this.latestWebViewState && webviewView?.webview) {
+                webviewView.webview.postMessage(this.latestWebViewState);
+            }
         });
     }
 
