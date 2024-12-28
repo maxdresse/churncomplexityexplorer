@@ -8,7 +8,7 @@ jest.mock('fs', () => ({ readFileSync: jest.fn(() => `
     }
     `) })
 );
-import { mockVsWorkspaceFolder } from '../__tests__/utils.spec';
+import { mockVsWorkspaceFolder } from '../__tests__/utils';
 import { LocCounter } from './loc-counter';
 describe('loc-counter', () => {
 
