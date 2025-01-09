@@ -56,6 +56,8 @@ export function activate(context: vscode.ExtensionContext) {
     const decoratingMetrics =  getAllDecoratingMetrics(context);
     // register tree view
     const treeProvider = registerExplorerView(decoratingMetrics, context);
+    (global as any)._cctesting_ = { workspaceTreeProvider: treeProvider };
+    
     const appCompState = new AppState();
     // register the controls webview
     registerControlsView(context, appCompState);
