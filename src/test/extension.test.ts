@@ -30,6 +30,8 @@ suite('Extension Test Suite', () => {
 		assert.match(await getLabelForSrcFolder(), /^🐘+/);
 	});
 
+	// Churn tests does not run in test environment, probably
+	// because calls to git are not allowed.
 	test.skip('Churn smoke test', async () => {
 		await vscode.commands.executeCommand('churncomplexityexplorer.clearChurn');
 		assert.doesNotMatch(await getLabelForSrcFolder(), /^🔥+/);

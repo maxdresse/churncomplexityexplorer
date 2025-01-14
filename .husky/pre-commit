@@ -1,1 +1,1 @@
-npm run package && npm run jest
+npm run package && npm run jest && npm run test
